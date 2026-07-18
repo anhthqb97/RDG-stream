@@ -55,7 +55,7 @@ CREATE KEYSPACE IF NOT EXISTS rdg
 |---|---|
 | **Requirement** | REQ-06 |
 | **Priority** | P0 |
-| **Status** | [ ] |
+| **Status** | [x] |
 
 ```cql
 CREATE TABLE rdg.metrics_current (
