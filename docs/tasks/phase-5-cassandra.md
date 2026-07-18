@@ -4,7 +4,7 @@
 |---|---|
 | **Tasks** | TASK-037 – TASK-041 |
 | **Priority** | P0 |
-| **Status** | [ ] |
+| **Status** | **Complete** |
 | **Previous** | [Phase 2 — Infrastructure](./phase-2-infrastructure.md) |
 | **Next** | [Phase 4 — Flink](./phase-4-flink.md) |
 
@@ -101,7 +101,7 @@ CREATE TABLE rdg.metrics_ts (
 |---|---|
 | **Requirement** | REQ-06 |
 | **Priority** | P0 |
-| **Status** | [ ] |
+| **Status** | [x] |
 
 Init container or entrypoint applies `schema.cql` after Cassandra is healthy.
 
@@ -125,4 +125,4 @@ docker compose exec cassandra cqlsh -e "SELECT * FROM rdg.metrics_ts LIMIT 5;"
 
 - [x] Keyspace `rdg` exists
 - [x] Tables `metrics_current` and `metrics_ts` exist
-- [ ] Flink sink writes rows (after Phase 4)
+- [x] Flink sink writes rows (after Phase 4)
