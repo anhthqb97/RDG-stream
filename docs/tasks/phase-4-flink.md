@@ -64,7 +64,7 @@ Consume from `metrics.raw`, bootstrap `kafka:9092`.
 |---|---|
 | **Requirement** | REQ-03 |
 | **Priority** | P0 |
-| **Status** | [ ] |
+| **Status** | [x] |
 
 Validate required fields: `plant_id`, `equipment_id`, `metric`, `value`, `unit`, `ts`.
 
