@@ -5,7 +5,7 @@
 ## Task
 
 - [ ] Task ID: **TASK-___**
-- [ ] Commit message follows `TASK-XXX: <action> <message>`
+- [ ] Commit message follows `TASK-XXX: <action> <message>` (one task per commit)
 
 ## Checklist
 

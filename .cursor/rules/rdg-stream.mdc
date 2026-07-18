@@ -9,7 +9,7 @@ Real-time pipeline: **Sources → Kafka → PyFlink → Cassandra** (+ MinIO che
 
 ## Status & docs
 
-- Phase 1 (design) is complete; implementation starts at **Phase 2** (`docker-compose.yml`).
+- Phases 0–3 and 5 complete; next: **Phase 4** (PyFlink job in `flink/jobs/rdg_job.py`).
 - Before coding, read: `docs/pipeline.md`, `docs/architecture.md`, `docs/open-questions.md`.
 - Task order: `docs/tasks/README.md` — MVP path: **0 → 2 → 3 + 5 → 4 → 6 → 9**.
 - All documentation in **English only**.
@@ -74,21 +74,43 @@ docs/
 
 ## Commits
 
-- Commit only when asked.
+**Mandatory: one task = one separate commit. Push after each commit before starting the next task.**
+
+| Rule | Detail |
+|------|--------|
+| **1 task → 1 commit** | Every finished task gets its own commit — code, config, or docs |
+| **1 commit → 1 task** | Never mix changes for TASK-028 and TASK-029 in the same commit |
+| **Message = task ID** | `TASK-XXX:` must match the task you just finished |
+| **Push immediately** | `git push origin main` after each task commit |
+| **Never bundle** | No multi-task commits · no multi-phase commits · no squashing tasks together |
+
+**Workflow (repeat per task):**
+
+1. Finish **one** task only.
+2. Mark `[x]` for that task in `docs/tasks/phase-N-*.md`.
+3. Stage **only** files for that task.
+4. Commit: `TASK-XXX: <action> <message>`.
+5. Push to `origin`.
+6. Start the next task.
+
+**Phase 4 example (10 separate commits):**
+
+```
+TASK-027: add PyFlink job scaffold
+TASK-028: add kafka source connector
+TASK-029: add JSON schema validation
+TASK-030: add DLQ routing for invalid records
+TASK-031: add KeyBy plant_id and metric
+TASK-032: add 1-min tumbling window
+TASK-033: add window avg min max aggregates
+TASK-034: add Cassandra sink
+TASK-035: add MinIO checkpoint configuration
+TASK-036: add PyFlink job submit instructions
+```
+
 - No `Co-authored-by: Cursor` in commit messages.
 - **Format:** `TASK-XXX: <action> <message>`
 - **Initial commit:** `initial commit` (first commit in repo only)
 - **Actions:** `add` · `update` · `fix` · `remove` · `refactor` · `docs` · `test` · `chore`
 - **Task ID must match the task you are doing** — check title in `docs/tasks/phase-N-*.md`.
-  - e.g. TASK-004 = Clone repo · TASK-011 = docker-compose.yml · TASK-016 = repo layout
-
-**Examples:**
-
-```
-TASK-004: add clone repo setup notes
-TASK-011: add docker-compose.yml
-TASK-016: add Cursor project rules
-TASK-027: add PyFlink job scaffold
-TASK-008: update metrics.raw schema in docs
-TASK-055: test DLQ routing (TC-010)
-```
+- Do not leave completed work uncommitted. Do not push secrets (`.env`, keys).
