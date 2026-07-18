@@ -115,9 +115,11 @@ TC-001 → TC-007 → TC-008 → TC-016 → TC-013
 |---|---|
 | **Requirement** | All REQ |
 | **Priority** | P1 |
-| **Status** | [ ] |
+| **Status** | [x] |
 
 Run all test cases TC-001 – TC-024. Log results in test-plan run log.
+
+**Result (2026-07-18):** Pass — all P0/P1 cases pass; P2 recovery cases (TC-019, TC-020) not run this pass. See [test-plan.md](../test-plan.md) §6.
 
 ---
 
@@ -132,6 +134,6 @@ Run all test cases TC-001 – TC-024. Log results in test-plan run log.
 
 ## Phase complete when
 
-- [ ] All P0 test cases pass
-- [ ] Test run logged in [test-plan.md](../test-plan.md)
-- [ ] No open P0 defects
+- [x] All P0 test cases pass
+- [x] Test run logged in [test-plan.md](../test-plan.md)
+- [x] No open P0 defects

@@ -1,7 +1,7 @@
 # Tasks — RDG Stream Platform
 
 > One file per phase. Requirements: [requirements.md](./requirements.md)  
-> **Project status:** Phase 9 validation in progress (MVP smoke tests). See [../README.md](../README.md).
+> **Project status:** Phase 9 validation complete (MVP + P1 tests). See [../README.md](../README.md).
 
 ---
 
@@ -18,7 +18,7 @@
 | 6 | [phase-6-sources.md](./phase-6-sources.md) | TASK-042 – 045 | P1 | **Complete** (042–043) |
 | 7 | [phase-7-downstream.md](./phase-7-downstream.md) | TASK-046 – 048 | P2 | Not started |
 | 8 | [phase-8-observability.md](./phase-8-observability.md) | TASK-049 – 052 | P1 | Not started |
-| 9 | [phase-9-validation.md](./phase-9-validation.md) | TASK-053 – 059 | P0 | In progress (053–055, 057) |
+| 9 | [phase-9-validation.md](./phase-9-validation.md) | TASK-053 – 059 | P0 | **Complete** |
 | 10 | [phase-10-production.md](./phase-10-production.md) | TASK-060 – 065 | P3 | Not started |
 
 **MVP:** Phase 0 → 2 → 3 + 5 → 4 → 6 → 9
@@ -58,10 +58,10 @@ flowchart TD
 
 ## Definition of done (MVP)
 
-- [ ] Phases 0–6 and 9 (TASK-053 – 057) complete
+- [x] Phases 0–6 and 9 (TASK-053 – 059) complete
 - [ ] `docker compose --profile dev up -d` starts without errors
 - [ ] Mock producer → Kafka → Flink → Cassandra works
-- [ ] Smoke tests TC-001, TC-007, TC-008, TC-016, TC-013 pass
+- [x] Smoke tests TC-001, TC-007, TC-008, TC-016, TC-013 pass
 
 ---
 
