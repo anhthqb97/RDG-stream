@@ -8,12 +8,18 @@ from pyflink.common import Types
 from pyflink.common.serialization import SimpleStringSchema
 from pyflink.common.watermark_strategy import WatermarkStrategy
 from pyflink.datastream import DataStream, OutputTag, StreamExecutionEnvironment
-from pyflink.datastream.connectors.kafka import KafkaOffsetsInitializer, KafkaSource
+from pyflink.datastream.connectors.kafka import (
+    KafkaOffsetsInitializer,
+    KafkaRecordSerializationSchema,
+    KafkaSink,
+    KafkaSource,
+)
 from pyflink.datastream.functions import ProcessFunction
 
 JOB_NAME = "rdg-stream-job"
 KAFKA_BOOTSTRAP = os.getenv("KAFKA_BOOTSTRAP", "kafka:19092")
 RAW_TOPIC = "metrics.raw"
+DLQ_TOPIC = "metrics.dlq"
 CONSUMER_GROUP = "rdg-flink"
 REQUIRED_FIELDS = ("plant_id", "equipment_id", "metric", "value", "unit", "ts")
 INVALID_TAG = OutputTag("invalid-records", Types.STRING())
@@ -71,8 +77,28 @@ class ValidateFunction(ProcessFunction):
         yield record
 
 
-def apply_validation(raw_stream: DataStream) -> DataStream:
-    return raw_stream.process(ValidateFunction(), output_type=Types.PICKLED_BYTE_ARRAY())
+def apply_validation(raw_stream: DataStream) -> tuple[DataStream, DataStream]:
+    validated = raw_stream.process(ValidateFunction(), output_type=Types.PICKLED_BYTE_ARRAY())
+    invalid = validated.get_side_output(INVALID_TAG)
+    return validated, invalid
+
+
+def build_dlq_kafka_sink() -> KafkaSink:
+    return (
+        KafkaSink.builder()
+        .set_bootstrap_servers(KAFKA_BOOTSTRAP)
+        .set_record_serializer(
+            KafkaRecordSerializationSchema.builder()
+            .set_topic(DLQ_TOPIC)
+            .set_value_serialization_schema(SimpleStringSchema())
+            .build()
+        )
+        .build()
+    )
+
+
+def route_invalid_to_dlq(invalid_stream: DataStream) -> None:
+    invalid_stream.sink_to(build_dlq_kafka_sink())
 
 
 def create_execution_environment() -> StreamExecutionEnvironment:
@@ -97,7 +123,8 @@ def build_kafka_source(env: StreamExecutionEnvironment) -> DataStream:
 def main() -> None:
     env = create_execution_environment()
     raw_stream = build_kafka_source(env)
-    apply_validation(raw_stream)
+    validated, invalid = apply_validation(raw_stream)
+    route_invalid_to_dlq(invalid)
     env.execute(JOB_NAME)
 
 

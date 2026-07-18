@@ -76,7 +76,7 @@ Validate required fields: `plant_id`, `equipment_id`, `metric`, `value`, `unit`,
 |---|---|
 | **Requirement** | REQ-03 |
 | **Priority** | P0 |
-| **Status** | [ ] |
+| **Status** | [x] |
 
 Invalid records → `metrics.dlq` as **wrapped JSON** with `error`, `reason`, `original` fields.
 
