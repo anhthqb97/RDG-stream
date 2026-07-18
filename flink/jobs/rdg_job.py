@@ -24,6 +24,7 @@ from pyflink.datastream.functions import (
 from pyflink.datastream.window import TumblingProcessingTimeWindows
 
 JOB_NAME = "rdg-stream-job"
+KAFKA_CONNECTOR_JAR = "file:///opt/flink/lib/flink-connector-kafka-3.3.0-1.19.jar"
 KAFKA_BOOTSTRAP = os.getenv("KAFKA_BOOTSTRAP", "kafka:19092")
 RAW_TOPIC = "metrics.raw"
 DLQ_TOPIC = "metrics.dlq"
@@ -234,6 +235,7 @@ def sink_to_cassandra(aggregated_stream: DataStream) -> None:
 def create_execution_environment() -> StreamExecutionEnvironment:
     env = StreamExecutionEnvironment.get_execution_environment()
     env.set_parallelism(1)
+    env.add_jars(KAFKA_CONNECTOR_JAR)
     return env
 
 

@@ -150,17 +150,32 @@ Configure checkpoint storage: `s3://flink-checkpoints/` on MinIO (`http://minio:
 |---|---|
 | **Requirement** | REQ-04 |
 | **Priority** | P0 |
-| **Status** | [ ] |
+| **Status** | [x] |
+
+Custom Flink image: `flink/Dockerfile` (Python 3, PyFlink deps, Kafka connector, S3 plugin for MinIO).
+
+**Build and start stack:**
 
 ```bash
-# Install deps in Flink container or custom image
-pip install -r flink/jobs/requirements.txt
-
-# Submit
-docker compose exec flink-jobmanager flink run -py /opt/flink/jobs/rdg_job.py
-
-# Or via Dashboard: upload rdg_job.py + dependencies
+docker compose build flink-jobmanager flink-taskmanager
+docker compose up -d
 ```
+
+**Submit job (recommended):**
+
+```bash
+./flink/submit-job.sh
+```
+
+**Submit manually:**
+
+```bash
+docker compose exec flink-jobmanager flink run -d -py /opt/flink/jobs/rdg_job.py
+```
+
+**Verify:** http://localhost:8081 → Running Jobs → `rdg-stream-job` = **RUNNING**
+
+**Or via Dashboard:** upload `rdg_job.py` + dependencies (custom image already includes deps).
 
 ---
 

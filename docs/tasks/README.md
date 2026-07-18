@@ -1,7 +1,7 @@
 # Tasks — RDG Stream Platform
 
 > One file per phase. Requirements: [requirements.md](./requirements.md)  
-> **Project status:** Phases 0–3 and 5 complete; next: Phase 4 (PyFlink). See [../README.md](../README.md).
+> **Project status:** Phases 0–5 complete; next: Phase 6 (mock producer). See [../README.md](../README.md).
 
 ---
 
@@ -13,7 +13,7 @@
 | 1 | [phase-1-design.md](./phase-1-design.md) | TASK-005 – 010 | P0 | **Complete** |
 | 2 | [phase-2-infrastructure.md](./phase-2-infrastructure.md) | TASK-011 – 020 | P0 | **Complete** |
 | 3 | [phase-3-kafka.md](./phase-3-kafka.md) | TASK-021 – 026 | P0 | **Complete** |
-| 4 | [phase-4-flink.md](./phase-4-flink.md) | TASK-027 – 036 | P0 | Not started |
+| 4 | [phase-4-flink.md](./phase-4-flink.md) | TASK-027 – 036 | P0 | **Complete** |
 | 5 | [phase-5-cassandra.md](./phase-5-cassandra.md) | TASK-037 – 041 | P0 | **Complete** |
 | 6 | [phase-6-sources.md](./phase-6-sources.md) | TASK-042 – 045 | P1 | Not started |
 | 7 | [phase-7-downstream.md](./phase-7-downstream.md) | TASK-046 – 048 | P2 | Not started |
