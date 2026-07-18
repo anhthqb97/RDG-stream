@@ -37,7 +37,7 @@ Build and deploy Flink job: read Kafka → validate → window → aggregate →
 |---|---|
 | **Requirement** | REQ-04 |
 | **Priority** | P0 |
-| **Status** | [ ] |
+| **Status** | [x] |
 
 Create **PyFlink** project in `flink/jobs/`:
 - `rdg_job.py` — main DataStream job
