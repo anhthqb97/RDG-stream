@@ -38,7 +38,7 @@ Create `cassandra/schema.cql` with keyspace and tables.
 |---|---|
 | **Requirement** | CON-05 |
 | **Priority** | P0 |
-| **Status** | [ ] |
+| **Status** | [x] |
 
 ```cql
 CREATE KEYSPACE IF NOT EXISTS rdg
