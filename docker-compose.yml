@@ -184,6 +184,10 @@ services:
         condition: service_healthy
       init:
         condition: service_completed_successfully
+    environment:
+      KAFKA_BOOTSTRAP: kafka:19092
+      KAFKA_TOPIC: metrics.raw
+      PUBLISH_INTERVAL_SEC: "2"
     networks:
       - stream
 

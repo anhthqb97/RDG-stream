@@ -48,7 +48,7 @@ Generate test data locally via mock producer (substitute for SCADA/webhook).
 |---|---|
 | **Requirement** | REQ-01 |
 | **Priority** | P0 |
-| **Status** | [ ] |
+| **Status** | [x] |
 
 Add `mock-producer` service to compose `dev` profile. Depends on Kafka healthy.
 
