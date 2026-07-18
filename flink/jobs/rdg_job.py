@@ -6,6 +6,7 @@ from typing import Any
 
 from pyflink.common import Types
 from pyflink.common.serialization import SimpleStringSchema
+from pyflink.common.time import Time
 from pyflink.common.watermark_strategy import WatermarkStrategy
 from pyflink.datastream import DataStream, OutputTag, StreamExecutionEnvironment
 from pyflink.datastream.connectors.kafka import (
@@ -14,7 +15,6 @@ from pyflink.datastream.connectors.kafka import (
     KafkaSink,
     KafkaSource,
 )
-from pyflink.common.time import Time
 from pyflink.datastream.functions import (
     AggregateFunction,
     ProcessFunction,
