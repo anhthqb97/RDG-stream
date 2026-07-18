@@ -60,11 +60,20 @@ services:
     command: jobmanager
     ports:
       - "8081:8081"
+    depends_on:
+      minio:
+        condition: service_healthy
     environment:
+      AWS_ACCESS_KEY_ID: minioadmin
+      AWS_SECRET_ACCESS_KEY: minioadmin
       FLINK_PROPERTIES: |
         jobmanager.rpc.address: flink-jobmanager
         state.backend: filesystem
-        state.checkpoints.dir: file:///tmp/flink-checkpoints
+        state.checkpoints.dir: s3://flink-checkpoints/
+        s3.endpoint: http://minio:9000
+        s3.access-key: minioadmin
+        s3.secret-key: minioadmin
+        s3.path.style.access: true
     volumes:
       - ./flink/jobs:/opt/flink/jobs
     networks:
@@ -85,10 +94,19 @@ services:
     depends_on:
       flink-jobmanager:
         condition: service_healthy
+      minio:
+        condition: service_healthy
     environment:
+      AWS_ACCESS_KEY_ID: minioadmin
+      AWS_SECRET_ACCESS_KEY: minioadmin
       FLINK_PROPERTIES: |
         jobmanager.rpc.address: flink-jobmanager
         taskmanager.numberOfTaskSlots: 2
+        state.checkpoints.dir: s3://flink-checkpoints/
+        s3.endpoint: http://minio:9000
+        s3.access-key: minioadmin
+        s3.secret-key: minioadmin
+        s3.path.style.access: true
     volumes:
       - ./flink/jobs:/opt/flink/jobs
     networks:

@@ -138,7 +138,7 @@ Write to:
 |---|---|
 | **Requirement** | REQ-08, NFR-05 |
 | **Priority** | P0 |
-| **Status** | [ ] |
+| **Status** | [x] |
 
 Configure checkpoint storage: `s3://flink-checkpoints/` on MinIO (`http://minio:9000`).
 
