@@ -1,3 +1,9 @@
 name: rdg-stream
 
 services: {}
+
+networks:
+  stream:
+    name: rdg-stream
+  storage:
+    name: rdg-storage

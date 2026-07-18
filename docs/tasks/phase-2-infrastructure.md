@@ -38,7 +38,7 @@ Define all services in root `docker-compose.yml`.
 |---|---|
 | **Requirement** | CON-06 |
 | **Priority** | P0 |
-| **Status** | [ ] |
+| **Status** | [x] |
 
 | Network | Services |
 |---------|----------|
