@@ -82,6 +82,7 @@ docs/
 | **1 commit → 1 task** | Never mix changes for TASK-028 and TASK-029 in the same commit |
 | **Message = task ID** | `TASK-XXX:` must match the task you just finished |
 | **Push immediately** | `git push origin main` after each task commit |
+| **Check before push** | Run `./.github/scripts/pre-push-check.sh` — must pass before every push |
 | **Never bundle** | No multi-task commits · no multi-phase commits · no squashing tasks together |
 | **No Cursor co-author** | Never add `Co-authored-by: Cursor` — human author only |
 
@@ -93,14 +94,41 @@ docs/
 - CI rejects commit bodies containing `Co-authored-by: Cursor` (see `.github/scripts/validate-commit-msg.sh`).
 - In Cursor user settings, keep `"cursor.chat.addCoauthoredByTrailer": false`.
 
+**Check before push (mandatory):**
+
+Run local CI checks before every `git push`:
+
+```bash
+./.github/scripts/pre-push-check.sh
+```
+
+This mirrors GitHub Actions: ruff check, ruff format, Python syntax, yamllint, docker compose validate.
+
+Install tools once:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements-dev.txt
+```
+
+Optional — run automatically via git hook:
+
+```bash
+git config core.hooksPath .githooks
+```
+
+The `.githooks/pre-push` hook runs the same script and blocks push on failure.
+
 **Workflow (repeat per task):**
 
 1. Finish **one** task only.
 2. Mark `[x]` for that task in `docs/tasks/phase-N-*.md`.
 3. Stage **only** files for that task.
 4. Commit: `TASK-XXX: <action> <message>`.
-5. Push to `origin`.
-6. Start the next task.
+5. Run `./.github/scripts/pre-push-check.sh` — fix any failures.
+6. Push to `origin`.
+7. Start the next task.
 
 **Phase 4 example (10 separate commits):**
 
