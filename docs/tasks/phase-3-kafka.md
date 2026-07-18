@@ -53,7 +53,7 @@ Create `kafka/init-topics.sh` to create all topics on first boot.
 |---|---|
 | **Requirement** | REQ-03 |
 | **Priority** | P0 |
-| **Status** | [ ] |
+| **Status** | [x] |
 
 - Topic: `metrics.dlq`
 - Partitions: 1 (local)
