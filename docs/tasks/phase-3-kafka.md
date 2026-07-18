@@ -4,7 +4,7 @@
 |---|---|
 | **Tasks** | TASK-021 – TASK-026 |
 | **Priority** | P0 |
-| **Status** | [ ] |
+| **Status** | **Complete** |
 | **Previous** | [Phase 2 — Infrastructure](./phase-2-infrastructure.md) |
 | **Next** | [Phase 4 — Flink](./phase-4-flink.md) |
 
@@ -97,7 +97,7 @@ One-shot init service in compose runs `init-topics.sh` after Kafka is healthy.
 |---|---|
 | **Requirement** | REQ-01 |
 | **Priority** | P0 |
-| **Status** | [ ] |
+| **Status** | [x] |
 
 ```bash
 docker compose exec -T kafka /opt/kafka/bin/kafka-console-producer.sh \
