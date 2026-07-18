@@ -10,7 +10,7 @@
 
 | Field | Value |
 |-------|-------|
-| Version | 1.1 |
+| Version | 1.2 |
 | Environment | Local Docker · `docker compose --profile dev` |
 | Consumer group | `rdg-flink` |
 | Window interval | 1 minute (processing time) |
@@ -45,8 +45,8 @@ docker compose --profile dev up -d
 # Wait until healthy (~60s)
 docker compose ps
 
-# Submit PyFlink job (when rdg_job.py exists)
-# docker compose exec flink-jobmanager flink run -py /opt/flink/jobs/rdg_job.py
+# Submit PyFlink job
+./flink/submit-job.sh
 ```
 
 | Item | Value |
@@ -54,6 +54,7 @@ docker compose ps
 | Kafka bootstrap | `localhost:9092` |
 | Flink UI | http://localhost:8081 |
 | Kafka UI | http://localhost:8090 |
+| Read API | http://localhost:8000 |
 | Cassandra | `localhost:9042` |
 | MinIO console | http://localhost:9001 |
 
@@ -76,10 +77,96 @@ docker compose ps
 | UC-03 | Minute aggregates | TC-011, TC-016 |
 | UC-04 | Persist snapshot + TS | TC-013, TC-014, TC-017 |
 | UC-05 | TaskManager recovery | TC-012, TC-018, TC-023 |
-| UC-06 | Query metrics | TC-013, TC-015 |
+| UC-06 | Query metrics | TC-013, TC-015, TC-025 |
 | UC-07 | Reset environment | TC-024 |
 
 Full specifications: [use-cases.md](./use-cases.md)
+
+---
+
+## 2.2 Basic manual test guide
+
+Step-by-step path for first-time validation. Each step maps to formal test cases below.
+
+### Step 1 — Start stack (TC-001)
+
+```bash
+cd rdg-stream
+docker compose --profile dev up -d
+sleep 60
+docker compose ps
+```
+
+**Pass:** `kafka`, `cassandra`, `minio`, `flink-jobmanager` are **healthy**.
+
+### Step 2 — Submit Flink job (TC-008)
+
+```bash
+./flink/submit-job.sh
+```
+
+Open http://localhost:8081 — job `rdg-stream-job` must be **RUNNING**.
+
+### Step 3 — Mock producer → Kafka (TC-007)
+
+```bash
+docker compose logs mock-producer --tail 10
+```
+
+Open http://localhost:8090 → Topics → `metrics.raw` — new JSON every ~2s.
+
+### Step 4 — Cassandra has data (TC-013, TC-016)
+
+Wait **≥ 90 seconds** (1-min window + buffer), then:
+
+```bash
+docker compose exec cassandra cqlsh -e \
+  "SELECT plant_id, metric, value, updated_at FROM rdg.metrics_current LIMIT 5;"
+```
+
+**Pass:** Rows for `plant-a`, `plant-b`, or `plant-c` with non-null values.
+
+### Step 5 — Read API (TC-025)
+
+```bash
+curl -sf http://localhost:8000/health
+curl -sf "http://localhost:8000/metrics/current?plant_id=plant-a"
+```
+
+**Pass:** Health returns `{"status":"ok"}`; current metrics return JSON array.
+
+### Step 6 — DLQ routing (TC-010)
+
+```bash
+docker compose exec -T kafka /opt/kafka/bin/kafka-console-producer.sh \
+  --bootstrap-server localhost:9092 --topic metrics.raw << 'EOF'
+{"plant_id":"BAD","metric":"x"}
+EOF
+sleep 30
+docker compose exec kafka /opt/kafka/bin/kafka-console-consumer.sh \
+  --bootstrap-server localhost:9092 \
+  --topic metrics.dlq \
+  --from-beginning \
+  --timeout-ms 15000
+```
+
+**Pass:** DLQ message contains `validation_error`; Flink job stays RUNNING.
+
+### Step 7 — Automated full suite (TASK-059)
+
+```bash
+chmod +x scripts/run-phase9-validation.sh
+./scripts/run-phase9-validation.sh
+```
+
+**Pass:** Summary shows `Failed: 0`.
+
+### Stop / reset
+
+```bash
+docker compose --profile dev down      # stop, keep data
+docker compose --profile dev down -v   # stop + wipe (TC-024)
+```
 
 ---
 
@@ -111,6 +198,7 @@ Full specifications: [use-cases.md](./use-cases.md)
 | TC-022 | Ops | Flink Dashboard shows job metrics | P1 |
 | TC-023 | Ops | MinIO bucket contains checkpoint files | P2 |
 | TC-024 | Cleanup | `docker compose down -v` removes data | P1 |
+| TC-025 | API | Read API health and current metrics | P1 |
 
 ---
 
@@ -707,6 +795,37 @@ docker compose exec cassandra cqlsh -e \
 
 ---
 
+### 4.10 Read API
+
+---
+
+#### TC-025 — Read API health and current metrics
+
+| Field | Value |
+|-------|-------|
+| **Priority** | P1 |
+| **Components** | API, CS |
+| **Requirement** | REQ-10 |
+
+**Preconditions:** TC-001 passed; `read-api` running (dev profile); TC-013 passed (data in Cassandra)
+
+**Steps:**
+1. Check health:
+   ```bash
+   curl -sf http://localhost:8000/health
+   ```
+2. Query current metrics:
+   ```bash
+   curl -sf "http://localhost:8000/metrics/current?plant_id=plant-a"
+   ```
+
+**Expected result:**
+- [ ] Health returns JSON with `"status":"ok"`
+- [ ] Current metrics returns non-empty JSON array for `plant-a`
+- [ ] Each item has `plant_id`, `metric`, `value`, `updated_at`
+
+---
+
 ## 5. Test execution order
 
 **Automated (recommended):**
@@ -728,6 +847,20 @@ TC-001 → TC-002 → TC-003 → TC-007 → TC-008
 ```
 
 **Smoke test (minimum):** TC-001, TC-007, TC-008, TC-016, TC-013
+
+**Minimum smoke (2 minutes, copy-paste):**
+
+```bash
+docker compose ps
+curl -sf http://localhost:8081/jobs/overview | head -c 200
+docker compose logs mock-producer --tail 3
+docker compose exec cassandra cqlsh -e "SELECT COUNT(*) FROM rdg.metrics_current;"
+curl -sf http://localhost:8000/health
+```
+
+**Pass when:** containers up · Flink job RUNNING · producer logging · Cassandra count > 0 · API health OK.
+
+See [§2.2 Basic manual test guide](#22-basic-manual-test-guide) for the full first-time walkthrough.
 
 ---
 
