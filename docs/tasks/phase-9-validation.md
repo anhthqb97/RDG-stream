@@ -31,9 +31,11 @@ TC-001 → TC-007 → TC-008 → TC-016 → TC-013
 |---|---|
 | **Requirement** | NFR-02 |
 | **Priority** | P0 |
-| **Status** | [ ] |
+| **Status** | [x] |
 
 **TC-001:** `docker compose --profile dev up -d` → all containers healthy.
+
+**Result (2026-07-18):** Pass — kafka, cassandra, flink (custom image), minio healthy; kafka-ui, mock-producer running.
 
 ---
 

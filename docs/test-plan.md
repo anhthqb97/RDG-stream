@@ -695,7 +695,7 @@ TC-001 → TC-002 → TC-003 → TC-007 → TC-008
 
 | Run date | Tester | Environment | Pass | Fail | Blocked | Notes |
 |----------|--------|-------------|------|------|---------|-------|
-| | | local Docker | | | | |
+| 2026-07-18 | local | local Docker | TC-001,007,008,010,013,016 | — | 056,058,059 | MVP smoke pass |
 | | | | | | | |
 
 **Result key:** Pass · Fail · Blocked · N/A
