@@ -146,7 +146,7 @@ rdg-stream/
 |---|---|
 | **Requirement** | CON-03, REQ-06 |
 | **Priority** | P0 |
-| **Status** | [ ] |
+| **Status** | [x] |
 
 - Image: `cassandra:4.1`
 - Port: `9042`
