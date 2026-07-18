@@ -64,11 +64,20 @@ Verify http://localhost:8081 loads and shows JobManager + TaskManagers.
 |---|---|
 | **Requirement** | REQ-03 |
 | **Priority** | P1 |
-| **Status** | [ ] |
+| **Status** | [x] |
 
 In Kafka UI:
 - Check consumer group lag for Flink job
 - Inspect `metrics.dlq` for schema errors
+
+**CLI verification:**
+
+```bash
+docker compose exec kafka /opt/kafka/bin/kafka-consumer-groups.sh \
+  --bootstrap-server localhost:9092 --describe --group rdg-flink
+```
+
+**Result (2026-07-18):** Pass — consumer group `rdg-flink` lag 6–8 per partition (stable under mock load); `metrics.dlq` topic present with 0 messages after clean restart (TC-010 invalid routing verified separately in Phase 9).
 
 ---
 
