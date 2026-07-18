@@ -43,7 +43,7 @@ docker compose version
 |---|---|
 | **Requirement** | NFR-03 |
 | **Priority** | P0 |
-| **Status** | [ ] |
+| **Status** | [x] |
 
 Docker Desktop → Settings → Resources → Memory: **8 GB minimum**, 12 GB recommended.
 
