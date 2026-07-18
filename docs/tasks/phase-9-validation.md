@@ -101,9 +101,11 @@ TC-001 → TC-007 → TC-008 → TC-016 → TC-013
 |---|---|
 | **Requirement** | NFR-07 |
 | **Priority** | P1 |
-| **Status** | [ ] |
+| **Status** | [x] |
 
 **TC-024:** `docker compose --profile dev down -v` → fresh restart has zero rows.
+
+**Result (2026-07-18):** Pass — after `down -v` and `up -d`, `metrics_current` count = 0 before Flink job resubmit; stack restarted clean with `minio-init` creating `flink-checkpoints` bucket.
 
 ---
 
