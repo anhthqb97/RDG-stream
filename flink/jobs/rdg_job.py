@@ -2,6 +2,7 @@
 
 import json
 import os
+from datetime import datetime, timezone
 from typing import Any
 
 from pyflink.common import Types
@@ -17,14 +18,15 @@ from pyflink.datastream.connectors.kafka import (
 )
 from pyflink.datastream.functions import (
     AggregateFunction,
+    MapFunction,
     ProcessFunction,
     ProcessWindowFunction,
-    SinkFunction,
 )
 from pyflink.datastream.window import TumblingProcessingTimeWindows
 
 JOB_NAME = "rdg-stream-job"
-KAFKA_CONNECTOR_JAR = "file:///opt/flink/lib/flink-connector-kafka-3.3.0-1.19.jar"
+KAFKA_CONNECTOR_JAR = "file:///opt/flink/lib/flink-sql-connector-kafka-3.3.0-1.19.jar"
+KAFKA_CLIENTS_JAR = "file:///opt/flink/lib/kafka-clients-3.4.0.jar"
 KAFKA_BOOTSTRAP = os.getenv("KAFKA_BOOTSTRAP", "kafka:19092")
 RAW_TOPIC = "metrics.raw"
 DLQ_TOPIC = "metrics.dlq"
@@ -182,17 +184,15 @@ def compute_aggregates(windowed_stream: DataStream) -> DataStream:
     )
 
 
-class CassandraMetricsSink(SinkFunction):
+class CassandraWriter(MapFunction):
     def open(self, runtime_context) -> None:
         from cassandra.cluster import Cluster
 
         self._cluster = Cluster([CASSANDRA_HOST])
         self._session = self._cluster.connect(CASSANDRA_KEYSPACE)
 
-    def invoke(self, value: dict[str, Any], context) -> None:
-        from datetime import UTC, datetime
-
-        window_end = datetime.fromtimestamp(value["window_end_ms"] / 1000, tz=UTC)
+    def map(self, value: dict[str, Any]) -> dict[str, Any]:
+        window_end = datetime.fromtimestamp(value["window_end_ms"] / 1000, tz=timezone.utc)
         bucket = window_end.date()
         self._session.execute(
             """
@@ -220,6 +220,7 @@ class CassandraMetricsSink(SinkFunction):
                 value["avg"],
             ),
         )
+        return value
 
     def close(self) -> None:
         self._session.shutdown()
@@ -227,13 +228,13 @@ class CassandraMetricsSink(SinkFunction):
 
 
 def sink_to_cassandra(aggregated_stream: DataStream) -> None:
-    aggregated_stream.add_sink(CassandraMetricsSink())
+    aggregated_stream.map(CassandraWriter(), output_type=Types.PICKLED_BYTE_ARRAY()).print()
 
 
 def create_execution_environment() -> StreamExecutionEnvironment:
     env = StreamExecutionEnvironment.get_execution_environment()
     env.set_parallelism(1)
-    env.add_jars(KAFKA_CONNECTOR_JAR)
+    env.add_jars(KAFKA_CONNECTOR_JAR, KAFKA_CLIENTS_JAR)
     return env
 
 
