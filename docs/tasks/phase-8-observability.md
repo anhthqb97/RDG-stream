@@ -4,8 +4,8 @@
 |---|---|
 | **Tasks** | TASK-049 – TASK-052 |
 | **Priority** | P1 |
-| **Previous** | [Phase 6 — Sources](./phase-6-sources.md) |
-| **Next** | [Phase 9 — Validation](./phase-9-validation.md) |
+| **Previous** | [Phase 7 — Downstream](./phase-7-downstream.md) |
+| **Next** | [Phase 10 — Production](./phase-10-production.md) |
 
 ---
 
@@ -87,22 +87,24 @@ docker compose exec kafka /opt/kafka/bin/kafka-consumer-groups.sh \
 |---|---|
 | **Requirement** | REQ-04 |
 | **Priority** | P1 |
-| **Status** | [ ] |
+| **Status** | [x] |
 
 In Flink Dashboard → job → Metrics:
 - `numRecordsIn` / `numRecordsOut` > 0
 - No sustained backpressure under mock load
 
+**Result (2026-07-18):** Pass — `0.Source__kafka-metrics-raw.numRecordsIn` = 316; `0.isBackPressured` = false. MinIO bucket `flink-checkpoints/rdg/checkpoints/` contains checkpoint metadata for job `11691954…` (TC-012/TC-023).
+
 ---
 
 ## Verify
 
-**Test cases:** TC-021, TC-022, TC-023
+**Test cases:** TC-021, TC-022, TC-023 — all pass (2026-07-18).
 
 ---
 
 ## Phase complete when
 
-- [ ] Kafka UI accessible and shows live messages
-- [ ] Flink Dashboard shows RUNNING job with metrics
-- [ ] MinIO shows checkpoint files updating
+- [x] Kafka UI accessible and shows live messages
+- [x] Flink Dashboard shows RUNNING job with metrics
+- [x] MinIO shows checkpoint files updating

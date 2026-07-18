@@ -255,9 +255,9 @@ docker compose exec cassandra cqlsh -e "SELECT * FROM rdg.metrics_ts LIMIT 5;"
 | MinIO Console | http://localhost:9001 | Checkpoint files |
 | Docker logs | `docker compose logs -f <service>` | Errors, startup |
 
-- [ ] **8.1 Kafka lag** — consumer group behind producer
-- [ ] **8.2 Flink metrics** — records in/out per second
-- [ ] **8.3 DLQ monitor** — messages in `metrics.dlq` = schema bugs
+- [x] **8.1 Kafka lag** — consumer group behind producer
+- [x] **8.2 Flink metrics** — records in/out per second
+- [x] **8.3 DLQ monitor** — messages in `metrics.dlq` = schema bugs
 
 ---
 
