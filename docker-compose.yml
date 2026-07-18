@@ -49,9 +49,22 @@ services:
     depends_on:
       kafka:
         condition: service_healthy
+      init:
+        condition: service_completed_successfully
     networks:
       - stream
 
+  mock-producer:
+    build: ./producers/mock
+    container_name: rdg-mock-producer
+    profiles: [dev]
+    depends_on:
+      kafka:
+        condition: service_healthy
+      init:
+        condition: service_completed_successfully
+    networks:
+      - stream
 
 networks:
   stream:

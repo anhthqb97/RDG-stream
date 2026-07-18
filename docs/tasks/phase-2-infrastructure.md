@@ -95,7 +95,7 @@ Use `depends_on: condition: service_healthy` so init runs after Kafka/Cassandra 
 | | |
 |---|---|
 | **Priority** | P0 |
-| **Status** | [ ] |
+| **Status** | [x] |
 
 ```
 rdg-stream/
