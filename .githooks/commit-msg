@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# Strip Cursor co-author trailer injected by the IDE/agent.
+set -euo pipefail
+
+MSG_FILE="${1:?commit message file required}"
+TMP="$(mktemp)"
+grep -v '^Co-authored-by: Cursor <cursoragent@cursor.com>$' "${MSG_FILE}" > "${TMP}"
+mv "${TMP}" "${MSG_FILE}"

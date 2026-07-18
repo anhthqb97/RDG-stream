@@ -83,6 +83,15 @@ docs/
 | **Message = task ID** | `TASK-XXX:` must match the task you just finished |
 | **Push immediately** | `git push origin main` after each task commit |
 | **Never bundle** | No multi-task commits · no multi-phase commits · no squashing tasks together |
+| **No Cursor co-author** | Never add `Co-authored-by: Cursor` — human author only |
+
+**No Cursor co-author (mandatory):**
+
+- Cursor may auto-append `Co-authored-by: Cursor <cursoragent@cursor.com>` when the agent runs `git commit`. **Do not allow this.**
+- Before committing, enable repo hooks once: `git config core.hooksPath .githooks` (or pass `-c core.hooksPath=.githooks` per commit).
+- The `.githooks/commit-msg` hook strips any Cursor co-author trailer before the commit is recorded.
+- CI rejects commit bodies containing `Co-authored-by: Cursor` (see `.github/scripts/validate-commit-msg.sh`).
+- In Cursor user settings, keep `"cursor.chat.addCoauthoredByTrailer": false`.
 
 **Workflow (repeat per task):**
 
@@ -108,7 +117,7 @@ TASK-035: add MinIO checkpoint configuration
 TASK-036: add PyFlink job submit instructions
 ```
 
-- No `Co-authored-by: Cursor` in commit messages.
+- No `Co-authored-by: Cursor` in commit messages (enforced by hook + CI).
 - **Format:** `TASK-XXX: <action> <message>`
 - **Initial commit:** `initial commit` (first commit in repo only)
 - **Actions:** `add` · `update` · `fix` · `remove` · `refactor` · `docs` · `test` · `chore`
