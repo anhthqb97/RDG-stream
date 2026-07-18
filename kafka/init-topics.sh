@@ -14,3 +14,5 @@ create_topic() {
     --partitions "${partitions}" \
     --replication-factor 1
 }
+
+create_topic "metrics.raw" 3
