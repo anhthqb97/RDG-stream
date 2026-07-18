@@ -30,7 +30,7 @@
 | Track requirements | [tasks/requirements.md](./tasks/requirements.md) |
 | Work through build tasks | [tasks/README.md](./tasks/README.md) → phase files |
 | Quick checklist while building | [implementation-checklist.md](./implementation-checklist.md) |
-| Run tests (after implementation) | [test-plan.md](./test-plan.md) |
+| Run tests (after implementation) | [test-plan.md](./test-plan.md) · [use-cases.md](./use-cases.md) |
 | See unresolved decisions | [open-questions.md](./open-questions.md) |
 
 ---
@@ -45,6 +45,7 @@
 | **tasks/** | Detailed tasks per phase (TASK-001+) | Implementers |
 | **implementation-checklist.md** | Condensed checklist with commands | During build/debug |
 | **test-plan.md** | Test cases TC-001 – TC-024 | QA / validation |
+| **use-cases.md** | Business use cases UC-01 – UC-07 | Product / QA |
 | **open-questions.md** | Decisions deferred to implementation | Tech lead |
 
 **Rule:** Design details live in `pipeline.md` and `architecture.md`. Tasks live in `tasks/`. The checklist links to both — it does not duplicate full specs.

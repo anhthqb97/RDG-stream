@@ -1,9 +1,20 @@
 # Test Plan — RDG Stream Platform
 
-> Local Docker test plan with test cases for the full pipeline.  
-> **Status:** Ready for use after Phase 2–6 implementation.
->
-> Index: [README.md](./README.md) · Reference: [pipeline.md](./pipeline.md) · [workflow.md](./workflow.md) · [architecture.md](./architecture.md) · Validation tasks: [tasks/phase-9-validation.md](./tasks/phase-9-validation.md)
+> Formal test specification for local Docker validation (Phase 9).  
+> **Use cases:** [use-cases.md](./use-cases.md) · **Runner:** `scripts/run-phase9-validation.sh`  
+> **Tasks:** [tasks/phase-9-validation.md](./tasks/phase-9-validation.md)
+
+---
+
+## Document control
+
+| Field | Value |
+|-------|-------|
+| Version | 1.1 |
+| Environment | Local Docker · `docker compose --profile dev` |
+| Consumer group | `rdg-flink` |
+| Window interval | 1 minute (processing time) |
+| Checkpoint interval | 60 seconds |
 
 ---
 
@@ -46,11 +57,29 @@ docker compose ps
 | Cassandra | `localhost:9042` |
 | MinIO console | http://localhost:9001 |
 
-**Valid sample message:**
+**Valid sample message (manual / TC-004):**
 
 ```json
-{"plant_id":"NM01","equipment_id":"GEN-01","metric":"power_output_mw","value":45.2,"unit":"MW","ts":"2026-07-18T10:00:00Z"}
+{"plant_id":"TC04","equipment_id":"GEN-01","metric":"power_output_mw","value":10.0,"unit":"MW","ts":"2026-07-18T10:00:00Z"}
 ```
+
+**Mock producer plants:** `plant-a`, `plant-b`, `plant-c` (see `producers/mock/producer.py`)
+
+---
+
+## 2.1 Use case → test traceability
+
+| Use case | Title | Test cases |
+|----------|-------|------------|
+| UC-01 | Ingest telemetry | TC-001, TC-007, TC-009, TC-016 |
+| UC-02 | Quarantine bad events | TC-010 |
+| UC-03 | Minute aggregates | TC-011, TC-016 |
+| UC-04 | Persist snapshot + TS | TC-013, TC-014, TC-017 |
+| UC-05 | TaskManager recovery | TC-012, TC-018, TC-023 |
+| UC-06 | Query metrics | TC-013, TC-015 |
+| UC-07 | Reset environment | TC-024 |
+
+Full specifications: [use-cases.md](./use-cases.md)
 
 ---
 
@@ -298,7 +327,7 @@ docker compose ps
    ```bash
    docker compose exec kafka /opt/kafka/bin/kafka-consumer-groups.sh \
      --bootstrap-server localhost:9092 \
-     --describe --group flink-metrics-job
+     --describe --group rdg-flink
    ```
 
 **Expected result:**
@@ -429,8 +458,11 @@ docker compose exec cassandra cqlsh -e \
 **Steps:**
 ```bash
 docker compose exec cassandra cqlsh -e \
-  "SELECT plant_id, metric, bucket, ts, value FROM rdg.metrics_ts LIMIT 10;"
+  "SELECT plant_id, metric, bucket, ts, value FROM rdg.metrics_ts \
+   WHERE plant_id='plant-a' AND metric='temperature' AND bucket='2026-07-18' LIMIT 10;"
 ```
+
+**Note:** `metrics_ts` partition key is `(plant_id, metric, bucket)` — include all three columns.
 
 **Expected result:**
 - [ ] At least 1 time-series row
@@ -677,7 +709,15 @@ docker compose exec cassandra cqlsh -e \
 
 ## 5. Test execution order
 
-Run in this order for first full pass:
+**Automated (recommended):**
+
+```bash
+chmod +x scripts/run-phase9-validation.sh
+./scripts/run-phase9-validation.sh              # P0/P1 except TC-024
+./scripts/run-phase9-validation.sh --include-teardown   # includes TC-024
+```
+
+**Manual order** for first full pass:
 
 ```
 TC-001 → TC-002 → TC-003 → TC-007 → TC-008
@@ -698,6 +738,10 @@ TC-001 → TC-002 → TC-003 → TC-007 → TC-008
 | 2026-07-18 | local | local Docker | TC-001,007,008,010,013,016 | — | 056,058,059 | MVP smoke pass |
 | 2026-07-18 | local | local Docker | TC-001–018,021–024 | — | TC-019,020 | Full P0/P1 pass; P2 recovery not run |
 | 2026-07-18 | local | local Docker | TC-021,022,023 | — | — | Phase 8 observability verified |
+| 2026-07-18T08:37Z | CI/local | Docker dev profile | TC-001–018,021–023 | — | TC-019,020,024¹ | Automated runner; 21 pass |
+| 2026-07-18T08:54Z | CI/local | Docker dev profile | TC-024 | — | — | Clean teardown count=0 |
+
+¹ TC-024 executed in separate approved run after main suite.
 
 **Result key:** Pass · Fail · Blocked · N/A
 
