@@ -68,7 +68,7 @@ Create `kafka/init-topics.sh` to create all topics on first boot.
 |---|---|
 | **Requirement** | REQ-09 |
 | **Priority** | P1 |
-| **Status** | [ ] |
+| **Status** | [x] |
 
 - Topic: `events.lifecycle`
 - Partitions: 1 (local)

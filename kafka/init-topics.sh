@@ -17,3 +17,6 @@ create_topic() {
 
 create_topic "metrics.raw" 3
 create_topic "metrics.dlq" 1
+create_topic "events.lifecycle" 1
+
+echo "Kafka topics ready."
