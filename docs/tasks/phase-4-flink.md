@@ -124,7 +124,7 @@ Per window: **avg**, **min**, **max** of `value`.
 |---|---|
 | **Requirement** | REQ-06, REQ-07 |
 | **Priority** | P0 |
-| **Status** | [ ] |
+| **Status** | [x] |
 
 Write to:
 - `rdg.metrics_current` — latest snapshot

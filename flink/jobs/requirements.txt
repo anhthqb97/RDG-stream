@@ -1,1 +1,2 @@
 apache-flink==1.19.*
+cassandra-driver==3.29.*

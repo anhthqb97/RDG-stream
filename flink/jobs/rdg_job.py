@@ -15,7 +15,12 @@ from pyflink.datastream.connectors.kafka import (
     KafkaSource,
 )
 from pyflink.common.time import Time
-from pyflink.datastream.functions import AggregateFunction, ProcessFunction, ProcessWindowFunction
+from pyflink.datastream.functions import (
+    AggregateFunction,
+    ProcessFunction,
+    ProcessWindowFunction,
+    SinkFunction,
+)
 from pyflink.datastream.window import TumblingProcessingTimeWindows
 
 JOB_NAME = "rdg-stream-job"
@@ -23,6 +28,8 @@ KAFKA_BOOTSTRAP = os.getenv("KAFKA_BOOTSTRAP", "kafka:19092")
 RAW_TOPIC = "metrics.raw"
 DLQ_TOPIC = "metrics.dlq"
 CONSUMER_GROUP = "rdg-flink"
+CASSANDRA_HOST = os.getenv("CASSANDRA_HOST", "cassandra")
+CASSANDRA_KEYSPACE = "rdg"
 REQUIRED_FIELDS = ("plant_id", "equipment_id", "metric", "value", "unit", "ts")
 INVALID_TAG = OutputTag("invalid-records", Types.STRING())
 
@@ -176,6 +183,54 @@ def compute_aggregates(windowed_stream: DataStream) -> DataStream:
     )
 
 
+class CassandraMetricsSink(SinkFunction):
+    def open(self, runtime_context) -> None:
+        from cassandra.cluster import Cluster
+
+        self._cluster = Cluster([CASSANDRA_HOST])
+        self._session = self._cluster.connect(CASSANDRA_KEYSPACE)
+
+    def invoke(self, value: dict[str, Any], context) -> None:
+        from datetime import UTC, datetime
+
+        window_end = datetime.fromtimestamp(value["window_end_ms"] / 1000, tz=UTC)
+        bucket = window_end.date()
+        self._session.execute(
+            """
+            INSERT INTO metrics_current (plant_id, metric, value, unit, updated_at)
+            VALUES (%s, %s, %s, %s, %s)
+            """,
+            (
+                value["plant_id"],
+                value["metric"],
+                value["avg"],
+                value["unit"],
+                window_end,
+            ),
+        )
+        self._session.execute(
+            """
+            INSERT INTO metrics_ts (plant_id, metric, bucket, ts, value)
+            VALUES (%s, %s, %s, %s, %s)
+            """,
+            (
+                value["plant_id"],
+                value["metric"],
+                bucket,
+                window_end,
+                value["avg"],
+            ),
+        )
+
+    def close(self) -> None:
+        self._session.shutdown()
+        self._cluster.shutdown()
+
+
+def sink_to_cassandra(aggregated_stream: DataStream) -> None:
+    aggregated_stream.add_sink(CassandraMetricsSink())
+
+
 def create_execution_environment() -> StreamExecutionEnvironment:
     env = StreamExecutionEnvironment.get_execution_environment()
     env.set_parallelism(1)
@@ -202,7 +257,8 @@ def main() -> None:
     route_invalid_to_dlq(invalid)
     keyed = key_by_plant_and_metric(validated)
     windowed = apply_tumbling_window(keyed)
-    compute_aggregates(windowed)
+    aggregated = compute_aggregates(windowed)
+    sink_to_cassandra(aggregated)
     env.execute(JOB_NAME)
 
 
