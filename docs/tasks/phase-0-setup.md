@@ -57,7 +57,7 @@ Docker Desktop → Settings → Resources → Memory: **8 GB minimum**, 12 GB re
 |---|---|
 | **Requirement** | NFR-02 |
 | **Priority** | P0 |
-| **Status** | [ ] |
+| **Status** | [x] |
 
 Ensure these ports are not in use:
 
