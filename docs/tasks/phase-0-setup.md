@@ -4,6 +4,7 @@
 |---|---|
 | **Tasks** | TASK-001 – TASK-004 |
 | **Priority** | P0 |
+| **Status** | [ ] |
 | **Next** | [Phase 1 — Design](./phase-1-design.md) |
 
 ---
@@ -22,7 +23,7 @@ Prepare local machine to run the RDG Stream Docker stack.
 |---|---|
 | **Requirement** | NFR-02 |
 | **Priority** | P0 |
-| **Status** | [ ] |
+| **Status** | [x] |
 
 Install Docker Desktop (macOS/Windows) or Docker Engine + Compose v2 (Linux).
 
@@ -31,6 +32,8 @@ Install Docker Desktop (macOS/Windows) or Docker Engine + Compose v2 (Linux).
 docker --version
 docker compose version
 ```
+
+**Verified (2026-07-18):** Docker 28.0.1 · Compose v2.33.1
 
 ---
 
@@ -43,6 +46,8 @@ docker compose version
 | **Status** | [ ] |
 
 Docker Desktop → Settings → Resources → Memory: **8 GB minimum**, 12 GB recommended.
+
+**Verified (2026-07-18):** 8 GB allocated (Docker reports ~7.65 GiB available)
 
 ---
 
@@ -70,6 +75,8 @@ Ensure these ports are not in use:
 lsof -i :9092 -i :8081 -i :9042
 ```
 
+**Verified (2026-07-18):** All ports free
+
 ---
 
 ### TASK-004 — Clone repo
@@ -81,15 +88,17 @@ lsof -i :9092 -i :8081 -i :9042
 | **Status** | [ ] |
 
 ```bash
-git clone <repo-url>
+git clone git@github.com:anhthqb97/RDG-stream.git
 cd rdg-stream
 ```
+
+**Verified (2026-07-18):** `/Users/ASUS/Documents/Projects/rdg-stream`
 
 ---
 
 ## Phase complete when
 
-- [ ] Docker and Compose installed
-- [ ] 8 GB+ RAM allocated
-- [ ] All ports free
-- [ ] Repo cloned locally
+- [x] Docker and Compose installed
+- [x] 8 GB+ RAM allocated
+- [x] All ports free
+- [x] Repo cloned locally
