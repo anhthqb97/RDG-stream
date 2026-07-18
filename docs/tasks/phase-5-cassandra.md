@@ -4,6 +4,7 @@
 |---|---|
 | **Tasks** | TASK-037 – TASK-041 |
 | **Priority** | P0 |
+| **Status** | [ ] |
 | **Previous** | [Phase 2 — Infrastructure](./phase-2-infrastructure.md) |
 | **Next** | [Phase 4 — Flink](./phase-4-flink.md) |
 
@@ -23,9 +24,11 @@ Define and apply Cassandra schema for metric snapshots and time-series.
 |---|---|
 | **Requirement** | REQ-06, REQ-07 |
 | **Priority** | P0 |
-| **Status** | [ ] |
+| **Status** | [x] |
 
 Create `cassandra/schema.cql` with keyspace and tables.
+
+**Deliverable:** [cassandra/schema.cql](../../cassandra/schema.cql)
 
 ---
 
@@ -41,6 +44,8 @@ Create `cassandra/schema.cql` with keyspace and tables.
 CREATE KEYSPACE IF NOT EXISTS rdg
   WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};
 ```
+
+**Verified (2026-07-18):** TC-003 · `DESCRIBE KEYSPACE rdg`
 
 ---
 
@@ -63,6 +68,8 @@ CREATE TABLE rdg.metrics_current (
 );
 ```
 
+**Verified (2026-07-18):** table exists · empty SELECT OK
+
 ---
 
 ### TASK-040 — Create metrics_ts table
@@ -84,6 +91,8 @@ CREATE TABLE rdg.metrics_ts (
 ) WITH CLUSTERING ORDER BY (ts DESC);
 ```
 
+**Verified (2026-07-18):** table exists · empty SELECT OK
+
 ---
 
 ### TASK-041 — Wire init script
@@ -95,6 +104,8 @@ CREATE TABLE rdg.metrics_ts (
 | **Status** | [ ] |
 
 Init container or entrypoint applies `schema.cql` after Cassandra is healthy.
+
+**Deliverable:** [init/init.sh](../../init/init.sh) applies schema via `cqlsh`
 
 ---
 
@@ -112,6 +123,6 @@ docker compose exec cassandra cqlsh -e "SELECT * FROM rdg.metrics_ts LIMIT 5;"
 
 ## Phase complete when
 
-- [ ] Keyspace `rdg` exists
-- [ ] Tables `metrics_current` and `metrics_ts` exist
+- [x] Keyspace `rdg` exists
+- [x] Tables `metrics_current` and `metrics_ts` exist
 - [ ] Flink sink writes rows (after Phase 4)
