@@ -50,9 +50,11 @@ Monitor pipeline health during local development.
 |---|---|
 | **Requirement** | NFR-06 |
 | **Priority** | P1 |
-| **Status** | [ ] |
+| **Status** | [x] |
 
 Verify http://localhost:8081 loads and shows JobManager + TaskManagers.
+
+**Result (2026-07-18):** Pass — overview shows 1 TaskManager, 2 slots; job `rdg-stream-job` (`11691954…`) state **RUNNING**.
 
 ---
 
