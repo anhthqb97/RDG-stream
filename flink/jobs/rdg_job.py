@@ -240,9 +240,13 @@ def sink_to_cassandra(aggregated_stream: DataStream) -> None:
     aggregated_stream.map(CassandraWriter(), output_type=Types.PICKLED_BYTE_ARRAY()).print()
 
 
+CHECKPOINT_INTERVAL_MS = 60_000
+
+
 def create_execution_environment() -> StreamExecutionEnvironment:
     env = StreamExecutionEnvironment.get_execution_environment()
     env.set_parallelism(1)
+    env.enable_checkpointing(CHECKPOINT_INTERVAL_MS)
     env.add_jars(KAFKA_CONNECTOR_JAR, KAFKA_CLIENTS_JAR)
     return env
 
