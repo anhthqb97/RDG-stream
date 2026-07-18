@@ -88,7 +88,7 @@ Invalid records → `metrics.dlq` as **wrapped JSON** with `error`, `reason`, `o
 |---|---|
 | **Requirement** | REQ-04 |
 | **Priority** | P0 |
-| **Status** | [ ] |
+| **Status** | [x] |
 
 Partition stream by composite key for correct windowing.
 

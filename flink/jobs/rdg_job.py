@@ -101,6 +101,10 @@ def route_invalid_to_dlq(invalid_stream: DataStream) -> None:
     invalid_stream.sink_to(build_dlq_kafka_sink())
 
 
+def key_by_plant_and_metric(stream: DataStream) -> DataStream:
+    return stream.key_by(lambda record: (record["plant_id"], record["metric"]))
+
+
 def create_execution_environment() -> StreamExecutionEnvironment:
     env = StreamExecutionEnvironment.get_execution_environment()
     env.set_parallelism(1)
@@ -125,6 +129,7 @@ def main() -> None:
     raw_stream = build_kafka_source(env)
     validated, invalid = apply_validation(raw_stream)
     route_invalid_to_dlq(invalid)
+    key_by_plant_and_metric(validated)
     env.execute(JOB_NAME)
 
 
