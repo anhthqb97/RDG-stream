@@ -83,7 +83,7 @@ Create `kafka/init-topics.sh` to create all topics on first boot.
 |---|---|
 | **Requirement** | REQ-02 |
 | **Priority** | P0 |
-| **Status** | [ ] |
+| **Status** | [x] |
 
 One-shot init service in compose runs `init-topics.sh` after Kafka is healthy.
 
