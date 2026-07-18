@@ -117,7 +117,7 @@ rdg-stream/
 |---|---|
 | **Requirement** | CON-01, REQ-02 |
 | **Priority** | P0 |
-| **Status** | [ ] |
+| **Status** | [x] |
 
 - Image: `apache/kafka:3.7.0`
 - Port: `9092`
