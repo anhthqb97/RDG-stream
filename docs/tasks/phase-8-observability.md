@@ -34,11 +34,13 @@ Monitor pipeline health during local development.
 |---|---|
 | **Requirement** | NFR-06 |
 | **Priority** | P1 |
-| **Status** | [ ] |
+| **Status** | [x] |
 
 - Image: `kafbat/kafka-ui:latest`
 - Port: `8090`
 - Profile: `dev`
+
+**Result (2026-07-18):** Pass — service configured in `docker-compose.yml` (Phase 2). UI loads at http://localhost:8090; cluster `local` connected; topics `metrics.raw`, `metrics.dlq`, `events.lifecycle` listed; `metrics.raw` shows live JSON messages (~317 total).
 
 ---
 
