@@ -52,7 +52,7 @@ Create **PyFlink** project in `flink/jobs/`:
 |---|---|
 | **Requirement** | REQ-02 |
 | **Priority** | P0 |
-| **Status** | [ ] |
+| **Status** | [x] |
 
 Consume from `metrics.raw`, bootstrap `kafka:9092`.
 
