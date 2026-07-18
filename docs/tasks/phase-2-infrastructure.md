@@ -81,7 +81,7 @@ Use `depends_on: condition: service_healthy` so init runs after Kafka/Cassandra 
 |---|---|
 | **Requirement** | CON-07 |
 | **Priority** | P0 |
-| **Status** | [ ] |
+| **Status** | [x] |
 
 | Profile | Services |
 |---------|----------|
