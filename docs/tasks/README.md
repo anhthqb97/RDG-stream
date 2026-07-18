@@ -1,7 +1,7 @@
 # Tasks — RDG Stream Platform
 
 > One file per phase. Requirements: [requirements.md](./requirements.md)  
-> **Project status:** Documentation phase — Phase 1 complete, implementation not started. See [../README.md](../README.md).
+> **Project status:** Phases 0–3 and 5 complete; next: Phase 4 (PyFlink). See [../README.md](../README.md).
 
 ---
 
@@ -9,12 +9,12 @@
 
 | Phase | File | Tasks | Priority | Status |
 |-------|------|-------|----------|--------|
-| 0 | [phase-0-setup.md](./phase-0-setup.md) | TASK-001 – 004 | P0 | Not started |
+| 0 | [phase-0-setup.md](./phase-0-setup.md) | TASK-001 – 004 | P0 | **Complete** |
 | 1 | [phase-1-design.md](./phase-1-design.md) | TASK-005 – 010 | P0 | **Complete** |
-| 2 | [phase-2-infrastructure.md](./phase-2-infrastructure.md) | TASK-011 – 020 | P0 | Not started |
-| 3 | [phase-3-kafka.md](./phase-3-kafka.md) | TASK-021 – 026 | P0 | Not started |
+| 2 | [phase-2-infrastructure.md](./phase-2-infrastructure.md) | TASK-011 – 020 | P0 | **Complete** |
+| 3 | [phase-3-kafka.md](./phase-3-kafka.md) | TASK-021 – 026 | P0 | **Complete** |
 | 4 | [phase-4-flink.md](./phase-4-flink.md) | TASK-027 – 036 | P0 | Not started |
-| 5 | [phase-5-cassandra.md](./phase-5-cassandra.md) | TASK-037 – 041 | P0 | Not started |
+| 5 | [phase-5-cassandra.md](./phase-5-cassandra.md) | TASK-037 – 041 | P0 | **Complete** |
 | 6 | [phase-6-sources.md](./phase-6-sources.md) | TASK-042 – 045 | P1 | Not started |
 | 7 | [phase-7-downstream.md](./phase-7-downstream.md) | TASK-046 – 048 | P2 | Not started |
 | 8 | [phase-8-observability.md](./phase-8-observability.md) | TASK-049 – 052 | P1 | Not started |
@@ -22,6 +22,8 @@
 | 10 | [phase-10-production.md](./phase-10-production.md) | TASK-060 – 065 | P3 | Not started |
 
 **MVP:** Phase 0 → 2 → 3 + 5 → 4 → 6 → 9
+
+**Commits:** One separate commit per task (`TASK-XXX:`). Push after each task — see [.cursor/rules/rdg-stream.mdc](../../.cursor/rules/rdg-stream.mdc).
 
 ---
 
@@ -68,7 +70,10 @@ flowchart TD
 | Date | Sprint | Phases done | Blockers | Notes |
 |------|--------|-------------|----------|-------|
 | 2026-07-18 | Documentation | Phase 1 | — | Design docs complete |
-| | Sprint 1 (impl) | / 8 | No docker-compose yet | Starts at Phase 2 |
+| 2026-07-18 | Sprint 1 (impl) | Phase 0 | — | Docker, ports, repo verified |
+| 2026-07-18 | Sprint 1 (impl) | Phase 2 | — | docker-compose.yml, all services healthy |
+| 2026-07-18 | Sprint 1 (impl) | Phase 3, 5 | — | Topics + schema verified (TC-002–005) |
+| | Sprint 1 (impl) | 4 / 8 | — | Next: Phase 4 (PyFlink) |
 | | Sprint 2 | / 2 | | |
 | | Sprint 3 | / 2 | | |
 

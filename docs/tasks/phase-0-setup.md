@@ -4,7 +4,7 @@
 |---|---|
 | **Tasks** | TASK-001 – TASK-004 |
 | **Priority** | P0 |
-| **Status** | [ ] |
+| **Status** | **Complete** |
 | **Next** | [Phase 1 — Design](./phase-1-design.md) |
 
 ---
@@ -85,7 +85,7 @@ lsof -i :9092 -i :8081 -i :9042
 |---|---|
 | **Requirement** | — |
 | **Priority** | P0 |
-| **Status** | [ ] |
+| **Status** | [x] |
 
 ```bash
 git clone git@github.com:anhthqb97/RDG-stream.git

@@ -1,6 +1,6 @@
 # Documentation — RDG Stream Platform
 
-> **Start here.** This repo is currently in the **documentation phase** — design, requirements, tasks, and test plans are complete; implementation (Docker, code) has not started yet.
+> **Start here.** Phases 0–2 are complete — the Docker stack runs locally. Next: PyFlink job and mock producer.
 
 ---
 
@@ -8,12 +8,14 @@
 
 | Area | Status | Notes |
 |------|--------|-------|
-| **Documentation** | In progress | Phase 1 (design) complete |
-| **Implementation** | Not started | Phases 2–10 pending |
-| **Runnable stack** | No | `docker-compose.yml` does not exist yet |
+| **Documentation** | Complete | Phase 1 (design) complete |
+| **Environment** | Complete | Phase 0 — Docker, ports, repo verified |
+| **Infrastructure** | Complete | Phase 2 — `docker compose --profile dev up -d` |
+| **Kafka / Cassandra** | Complete | Phase 3 + 5 — topics and schema verified |
+| **Pipeline code** | Not started | Phases 4, 6, 9 pending |
 
-**Documentation complete:** Phase 1 — Design & planning  
-**Next step (implementation):** [Phase 2 — Infrastructure](./tasks/phase-2-infrastructure.md)
+**Complete:** Phase 0 — Environment · Phase 1 — Design · Phase 2 — Infrastructure · Phase 3 — Kafka · Phase 5 — Cassandra  
+**Next step:** [Phase 4 — Flink](./tasks/phase-4-flink.md) (PyFlink job)
 
 ---
 
@@ -119,12 +121,12 @@ flowchart TD
 | File | Phase | Status |
 |------|-------|--------|
 | [requirements.md](./tasks/requirements.md) | Requirements | Complete |
-| [phase-0-setup.md](./tasks/phase-0-setup.md) | Environment | Not started |
+| [phase-0-setup.md](./tasks/phase-0-setup.md) | Environment | **Complete** |
 | [phase-1-design.md](./tasks/phase-1-design.md) | Design | **Complete** |
-| [phase-2-infrastructure.md](./tasks/phase-2-infrastructure.md) | Docker | Not started |
-| [phase-3-kafka.md](./tasks/phase-3-kafka.md) | Kafka | Not started |
+| [phase-2-infrastructure.md](./tasks/phase-2-infrastructure.md) | Docker | **Complete** |
+| [phase-3-kafka.md](./tasks/phase-3-kafka.md) | Kafka | **Complete** |
 | [phase-4-flink.md](./tasks/phase-4-flink.md) | Flink | Not started |
-| [phase-5-cassandra.md](./tasks/phase-5-cassandra.md) | Cassandra | Not started |
+| [phase-5-cassandra.md](./tasks/phase-5-cassandra.md) | Cassandra | **Complete** |
 | [phase-6-sources.md](./tasks/phase-6-sources.md) | Sources | Not started |
 | [phase-7-downstream.md](./tasks/phase-7-downstream.md) | Downstream | Not started |
 | [phase-8-observability.md](./tasks/phase-8-observability.md) | Observability | Not started |

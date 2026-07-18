@@ -2,7 +2,7 @@
 
 > **Index only.** Each phase has its own file in [tasks/](./tasks/).
 >
-> **Status:** Documentation phase — [Phase 1 complete](./tasks/phase-1-design.md). Implementation starts at [Phase 2](./tasks/phase-2-infrastructure.md).
+> **Status:** Phases 0–3 and 5 complete. Next: [Phase 4 — Flink](./tasks/phase-4-flink.md).
 
 ---
 
@@ -21,12 +21,12 @@
 
 | Phase | File | Tasks | Status |
 |-------|------|-------|--------|
-| 0 — Setup | [tasks/phase-0-setup.md](./tasks/phase-0-setup.md) | TASK-001 – 004 | Not started |
+| 0 — Setup | [tasks/phase-0-setup.md](./tasks/phase-0-setup.md) | TASK-001 – 004 | **Complete** |
 | 1 — Design | [tasks/phase-1-design.md](./tasks/phase-1-design.md) | TASK-005 – 010 | **Complete** |
-| 2 — Infrastructure | [tasks/phase-2-infrastructure.md](./tasks/phase-2-infrastructure.md) | TASK-011 – 020 | Not started |
-| 3 — Kafka | [tasks/phase-3-kafka.md](./tasks/phase-3-kafka.md) | TASK-021 – 026 | Not started |
+| 2 — Infrastructure | [tasks/phase-2-infrastructure.md](./tasks/phase-2-infrastructure.md) | TASK-011 – 020 | **Complete** |
+| 3 — Kafka | [tasks/phase-3-kafka.md](./tasks/phase-3-kafka.md) | TASK-021 – 026 | **Complete** |
 | 4 — Flink | [tasks/phase-4-flink.md](./tasks/phase-4-flink.md) | TASK-027 – 036 | Not started |
-| 5 — Cassandra | [tasks/phase-5-cassandra.md](./tasks/phase-5-cassandra.md) | TASK-037 – 041 | Not started |
+| 5 — Cassandra | [tasks/phase-5-cassandra.md](./tasks/phase-5-cassandra.md) | TASK-037 – 041 | **Complete** |
 | 6 — Sources | [tasks/phase-6-sources.md](./tasks/phase-6-sources.md) | TASK-042 – 045 | Not started |
 | 7 — Downstream | [tasks/phase-7-downstream.md](./tasks/phase-7-downstream.md) | TASK-046 – 048 | Not started |
 | 8 — Observability | [tasks/phase-8-observability.md](./tasks/phase-8-observability.md) | TASK-049 – 052 | Not started |
