@@ -7,6 +7,8 @@ Real-time stream processing pipeline inspired by Netflix RDG (Real-Time Distribu
 
 **100% free & open source** · runs locally in **Docker** · no paid cloud services.
 
+[![Code Review](https://github.com/anhthqb97/RDG-stream/actions/workflows/code-review.yml/badge.svg)](https://github.com/anhthqb97/RDG-stream/actions/workflows/code-review.yml)
+
 ## Workflow overview
 
 ```mermaid
@@ -220,6 +222,23 @@ Minimum validation after setup — see [test-plan.md](./docs/test-plan.md) for f
 3. **TC-008** — Flink job RUNNING
 4. **TC-016** — End-to-end: Kafka → Flink → Cassandra
 5. **TC-013** — Rows in `rdg.metrics_current`
+
+---
+
+## CI / code review
+
+GitHub Actions runs on every **pull request** and **push to main**:
+
+| Check | When |
+|-------|------|
+| Commit message format | PR only (`TASK-XXX: <action> <message>`) |
+| Python lint (ruff) | When `flink/` or `producers/` change |
+| YAML lint | When Docker or workflow files change |
+| Docker Compose validate | When `docker-compose.yml` exists |
+| Secret scan (gitleaks) | Always |
+| PR summary comment | PR only |
+
+Workflow: [`.github/workflows/code-review.yml`](.github/workflows/code-review.yml)
 
 ---
 

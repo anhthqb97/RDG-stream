@@ -1,0 +1,225 @@
+name: Code Review
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+concurrency:
+  group: code-review-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  changes:
+    name: Detect changes
+    runs-on: ubuntu-latest
+    outputs:
+      python: ${{ steps.filter.outputs.python }}
+      docker: ${{ steps.filter.outputs.docker }}
+      workflows: ${{ steps.filter.outputs.workflows }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            python:
+              - 'flink/**'
+              - 'producers/**'
+            docker:
+              - 'docker-compose.yml'
+              - 'docker-compose.*.yml'
+              - 'kafka/**'
+              - 'cassandra/**'
+            workflows:
+              - '.github/**'
+
+  commit-message:
+    name: Commit message format
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Validate TASK-XXX commit format
+        run: |
+          chmod +x .github/scripts/validate-commit-msg.sh
+          .github/scripts/validate-commit-msg.sh \
+            "${{ github.event.pull_request.base.sha }}..${{ github.sha }}"
+
+  python-lint:
+    name: Python lint (ruff)
+    runs-on: ubuntu-latest
+    needs: changes
+    if: needs.changes.outputs.python == 'true'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install ruff
+        run: pip install ruff
+      - name: Ruff check
+        run: |
+          TARGETS=()
+          [[ -d flink ]] && TARGETS+=(flink)
+          [[ -d producers ]] && TARGETS+=(producers)
+          if [[ ${#TARGETS[@]} -eq 0 ]]; then
+            echo "No Python source directories yet — skipping ruff check."
+            exit 0
+          fi
+          ruff check "${TARGETS[@]}"
+      - name: Ruff format check
+        run: |
+          TARGETS=()
+          [[ -d flink ]] && TARGETS+=(flink)
+          [[ -d producers ]] && TARGETS+=(producers)
+          if [[ ${#TARGETS[@]} -eq 0 ]]; then
+            echo "No Python source directories yet — skipping ruff format."
+            exit 0
+          fi
+          ruff format --check "${TARGETS[@]}"
+
+  python-syntax:
+    name: Python syntax check
+    runs-on: ubuntu-latest
+    needs: changes
+    if: needs.changes.outputs.python == 'true'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Compile Python files
+        run: |
+          if [[ ! -d flink && ! -d producers ]]; then
+            echo "No Python source directories yet — skipping syntax check."
+            exit 0
+          fi
+          find flink producers -name '*.py' -print0 2>/dev/null | \
+            xargs -0 -r python -m py_compile
+
+  yaml-lint:
+    name: YAML lint
+    runs-on: ubuntu-latest
+    needs: changes
+    if: |
+      needs.changes.outputs.docker == 'true' ||
+      needs.changes.outputs.workflows == 'true'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install yamllint
+        run: pip install yamllint
+      - name: Lint YAML files
+        run: |
+          YAML_FILES=()
+          [[ -f docker-compose.yml ]] && YAML_FILES+=(docker-compose.yml)
+          if [[ -d .github/workflows ]]; then
+            while IFS= read -r -d '' file; do
+              YAML_FILES+=("$file")
+            done < <(find .github/workflows \( -name '*.yml' -o -name '*.yaml' \) -print0)
+          fi
+          if [[ ${#YAML_FILES[@]} -gt 0 ]]; then
+            yamllint -d relaxed "${YAML_FILES[@]}"
+          else
+            echo "No YAML files to lint."
+          fi
+
+  docker-compose-validate:
+    name: Docker Compose validate
+    runs-on: ubuntu-latest
+    needs: changes
+    if: needs.changes.outputs.docker == 'true'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate docker-compose.yml
+        run: |
+          if [[ ! -f docker-compose.yml ]]; then
+            echo "No docker-compose.yml yet — skipping validation."
+            exit 0
+          fi
+          docker compose -f docker-compose.yml config --quiet
+          echo "docker-compose.yml is valid."
+
+  workflow-lint:
+    name: GitHub Actions lint
+    runs-on: ubuntu-latest
+    needs: changes
+    if: needs.changes.outputs.workflows == 'true'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run actionlint
+        run: |
+          bash <(curl -fsSL https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)
+          ./actionlint -color
+
+  secret-scan:
+    name: Secret scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  review-summary:
+    name: PR review summary
+    runs-on: ubuntu-latest
+    if: always() && github.event_name == 'pull_request'
+    needs:
+      - commit-message
+      - python-lint
+      - python-syntax
+      - yaml-lint
+      - docker-compose-validate
+      - workflow-lint
+      - secret-scan
+    steps:
+      - name: Post review summary
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const jobs = ${{ toJSON(needs) }};
+            const lines = ['## Code review summary', ''];
+            for (const [name, job] of Object.entries(jobs)) {
+              if (job.result === 'skipped') {
+                lines.push(`- ⏭️ **${name}**: skipped`);
+              } else if (job.result === 'success') {
+                lines.push(`- ✅ **${name}**: passed`);
+              } else {
+                lines.push(`- ❌ **${name}**: ${job.result}`);
+              }
+            }
+            lines.push('', 'See [project rules](.cursor/rules/rdg-stream.mdc) and [test-plan.md](docs/test-plan.md).');
+            const body = lines.join('\n');
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            const existing = comments.find(c =>
+              c.user.type === 'Bot' && c.body.includes('## Code review summary')
+            );
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }
