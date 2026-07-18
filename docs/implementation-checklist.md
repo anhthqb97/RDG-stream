@@ -238,9 +238,9 @@ docker compose exec cassandra cqlsh -e "SELECT * FROM rdg.metrics_ts LIMIT 5;"
 
 > **Detailed tasks:** [tasks/phase-7-downstream.md](./tasks/phase-7-downstream.md)
 
-- [ ] **7.1 Read via cqlsh** — enough for pipeline proof
-- [ ] **7.2 Simple read API** — Python FastAPI (free, Docker)
-- [ ] **7.3 External app** — connect to `localhost:9042` from host via read API
+- [x] **7.1 Read via cqlsh** — enough for pipeline proof
+- [x] **7.2 Simple read API** — Python FastAPI (free, Docker)
+- [x] **7.3 External app** — connect to `localhost:9042` from host via read API
 
 ---
 

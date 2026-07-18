@@ -16,7 +16,7 @@
 | 4 | [phase-4-flink.md](./phase-4-flink.md) | TASK-027 – 036 | P0 | **Complete** |
 | 5 | [phase-5-cassandra.md](./phase-5-cassandra.md) | TASK-037 – 041 | P0 | **Complete** |
 | 6 | [phase-6-sources.md](./phase-6-sources.md) | TASK-042 – 045 | P1 | **Complete** (042–043) |
-| 7 | [phase-7-downstream.md](./phase-7-downstream.md) | TASK-046 – 048 | P2 | Not started |
+| 7 | [phase-7-downstream.md](./phase-7-downstream.md) | TASK-046 – 048 | P0/P2 | **Complete** |
 | 8 | [phase-8-observability.md](./phase-8-observability.md) | TASK-049 – 052 | P1 | Not started |
 | 9 | [phase-9-validation.md](./phase-9-validation.md) | TASK-053 – 059 | P0 | **Complete** |
 | 10 | [phase-10-production.md](./phase-10-production.md) | TASK-060 – 065 | P3 | Not started |

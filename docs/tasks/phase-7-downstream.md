@@ -72,18 +72,36 @@ curl "http://localhost:8000/metrics/current?plant_id=plant-a"
 |---|---|
 | **Requirement** | REQ-10 |
 | **Priority** | P3 |
-| **Status** | [ ] |
+| **Status** | [x] |
 
 Document host access for apps outside Docker:
 
+| Service | Host endpoint | Notes |
+|---------|---------------|-------|
+| Read API | `http://localhost:8000` | Preferred for dashboards (profile `dev`) |
+| Cassandra | `localhost:9042` | Direct CQL; keyspace `rdg` |
+| Kafka | `localhost:9092` | Produce/consume from host |
+| Flink UI | `http://localhost:8081` | Job monitoring |
+| Kafka UI | `http://localhost:8090` | Topic inspection (profile `dev`) |
+| MinIO | `http://localhost:9001` | Checkpoint browser |
+
+**Example (read API from host):**
+
+```bash
+curl "http://localhost:8000/metrics/current?plant_id=plant-b"
+curl "http://localhost:8000/metrics/history?plant_id=plant-a&metric=flow_rate"
 ```
-Cassandra: localhost:9042
-Kafka:     localhost:9092
+
+**Example (cqlsh from host):**
+
+```bash
+docker compose exec cassandra cqlsh -e \
+  "SELECT * FROM rdg.metrics_current WHERE plant_id='plant-b';"
 ```
 
 ---
 
 ## Phase complete when
 
-- [ ] Metrics readable via cqlsh
-- [ ] (Optional) Read API returns JSON from Cassandra
+- [x] Metrics readable via cqlsh
+- [x] (Optional) Read API returns JSON from Cassandra
