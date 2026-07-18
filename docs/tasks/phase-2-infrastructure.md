@@ -132,7 +132,7 @@ rdg-stream/
 |---|---|
 | **Requirement** | CON-02, REQ-04 |
 | **Priority** | P0 |
-| **Status** | [ ] |
+| **Status** | [x] |
 
 - Image: `flink:1.19-scala_2.12-java11`
 - Services: `flink-jobmanager` (port 8081), `flink-taskmanager`

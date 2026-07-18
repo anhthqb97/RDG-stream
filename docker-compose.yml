@@ -34,7 +34,47 @@ services:
       start_period: 30s
 
 
+  flink-jobmanager:
+    image: flink:1.19-scala_2.12-java11
+    hostname: flink-jobmanager
+    container_name: rdg-flink-jobmanager
+    command: jobmanager
+    ports:
+      - "8081:8081"
+    environment:
+      FLINK_PROPERTIES: |
+        jobmanager.rpc.address: flink-jobmanager
+        state.backend: filesystem
+        state.checkpoints.dir: file:///tmp/flink-checkpoints
+    volumes:
+      - ./flink/jobs:/opt/flink/jobs
+    networks:
+      - stream
+      - storage
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:8081/ || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
 
+  flink-taskmanager:
+    image: flink:1.19-scala_2.12-java11
+    hostname: flink-taskmanager
+    container_name: rdg-flink-taskmanager
+    command: taskmanager
+    depends_on:
+      flink-jobmanager:
+        condition: service_healthy
+    environment:
+      FLINK_PROPERTIES: |
+        jobmanager.rpc.address: flink-jobmanager
+        taskmanager.numberOfTaskSlots: 2
+    volumes:
+      - ./flink/jobs:/opt/flink/jobs
+    networks:
+      - stream
+      - storage
 
 
   kafka-ui:
