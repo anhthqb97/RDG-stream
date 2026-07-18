@@ -23,15 +23,20 @@ Expose stored metrics for dashboards and external applications.
 |---|---|
 | **Requirement** | REQ-10 |
 | **Priority** | P0 |
-| **Status** | [ ] |
+| **Status** | [x] |
 
 ```bash
 docker compose exec cassandra cqlsh -e \
   "SELECT plant_id, metric, value, updated_at FROM rdg.metrics_current LIMIT 10;"
 
 docker compose exec cassandra cqlsh -e \
-  "SELECT * FROM rdg.metrics_ts WHERE plant_id='NM01' LIMIT 5;"
+  "SELECT plant_id, metric, bucket, ts, value FROM rdg.metrics_ts \
+   WHERE plant_id='plant-a' AND metric='temperature' AND bucket='2026-07-18' LIMIT 5;"
 ```
+
+**Note:** `metrics_ts` partition key is `(plant_id, metric, bucket)` — query all three columns (use today's date for `bucket`).
+
+**Result (2026-07-18):** Pass — 10 rows from `metrics_current`; time-series rows returned for `plant-a` / `temperature`.
 
 ---
 
