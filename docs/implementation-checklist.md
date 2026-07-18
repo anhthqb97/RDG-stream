@@ -2,7 +2,7 @@
 
 > **Condensed build checklist** — use while implementing. For detailed task specs, see [tasks/](./tasks/) (one file per phase).
 >
-> **Status:** Documentation phase complete (Phase 1). This checklist applies when starting **Phase 2+**.
+> **Status:** Phases 0–3 and 5 complete. Next: **Phase 4** (PyFlink job).
 >
 > **100% free & open source** · **Docker Compose** · **Test on your laptop**
 >
@@ -110,12 +110,12 @@ Mock producer / webhook / SCADA
 
 > **Detailed tasks:** [tasks/phase-2-infrastructure.md](./tasks/phase-2-infrastructure.md)
 
-- [ ] **2.1 `docker-compose.yml`** — all services defined
-- [ ] **2.2 Networks** — `stream` (Kafka, Flink) + `storage` (Cassandra)
-- [ ] **2.3 Volumes** — persist Kafka + Cassandra data between restarts
-- [ ] **2.4 Init container** — create Kafka topics + Cassandra keyspace on first boot
-- [ ] **2.5 Healthchecks** — `depends_on: condition: service_healthy`
-- [ ] **2.6 Profiles** — `default` (core) · `dev` (+ UI, mock producer)
+- [x] **2.1 `docker-compose.yml`** — all services defined
+- [x] **2.2 Networks** — `stream` (Kafka, Flink) + `storage` (Cassandra)
+- [x] **2.3 Volumes** — persist Kafka + Cassandra data between restarts
+- [x] **2.4 Init container** — create Kafka topics + Cassandra keyspace on first boot
+- [x] **2.5 Healthchecks** — `depends_on: condition: service_healthy`
+- [x] **2.6 Profiles** — `default` (core) · `dev` (+ UI, mock producer)
 
 **Repo layout:**
 
@@ -147,8 +147,8 @@ docker compose --profile dev up -d
 
 > **Detailed tasks:** [tasks/phase-3-kafka.md](./tasks/phase-3-kafka.md)
 
-- [ ] **3.1 Topics** — `metrics.raw`, `metrics.dlq`, `events.lifecycle`
-- [ ] **3.2 Partitions** — 3 locally (6 in prod)
+- [x] **3.1 Topics** — `metrics.raw`, `metrics.dlq`, `events.lifecycle`
+- [x] **3.2 Partitions** — 3 locally (6 in prod)
 - [ ] **3.3 JSON schema** — see below
 - [ ] **3.4 Mock producer** — Python container publishes every 2s
 - [ ] **3.5 Verify in Kafka UI** — http://localhost:8090 → Topics → `metrics.raw`
@@ -204,8 +204,8 @@ docker compose exec flink-jobmanager flink run -py /opt/flink/jobs/rdg_job.py
 
 > **Detailed tasks:** [tasks/phase-5-cassandra.md](./tasks/phase-5-cassandra.md)
 
-- [ ] **5.1 Apply schema** — `cassandra/schema.cql` via init script
-- [ ] **5.2 Tables** — `rdg.metrics_current`, `rdg.metrics_ts`
+- [x] **5.1 Apply schema** — `cassandra/schema.cql` via init script
+- [x] **5.2 Tables** — `rdg.metrics_current`, `rdg.metrics_ts`
 - [ ] **5.3 Local query test:**
 
 ```bash

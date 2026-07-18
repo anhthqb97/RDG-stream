@@ -4,7 +4,7 @@
 |---|---|
 | **Tasks** | TASK-011 – TASK-020 |
 | **Priority** | P0 |
-| **Status** | [ ] |
+| **Status** | **Complete** |
 | **Previous** | [Phase 1 — Design](./phase-1-design.md) |
 | **Next** | [Phase 3 — Kafka](./phase-3-kafka.md) · [Phase 5 — Cassandra](./phase-5-cassandra.md) |
 
@@ -161,7 +161,7 @@ rdg-stream/
 |---|---|
 | **Requirement** | CON-04, REQ-08 |
 | **Priority** | P0 |
-| **Status** | [ ] |
+| **Status** | [x] |
 
 - Image: `minio/minio:latest`
 - Ports: `9000` (API), `9001` (console)

@@ -1,7 +1,7 @@
 # Architecture — RDG Stream Platform
 
 > Draft v0.2 · **100% free & open source** · **Docker Compose** · **Local test on laptop**  
-> **Status:** Documentation phase — design complete, implementation not started.
+> **Status:** Phase 2 complete — Docker stack runs locally; PyFlink job pending (Phase 4).
 >
 > Index: [README.md](./README.md) · Pipeline: [pipeline.md](./pipeline.md) · Charts: [workflow.md](./workflow.md) · Tasks: [tasks/](./tasks/) · Checklist: [implementation-checklist.md](./implementation-checklist.md) · Tests: [test-plan.md](./test-plan.md)
 
@@ -37,8 +37,6 @@ S3 ──┘      │      ├──► MO
 ---
 
 ## 3. Local quick start
-
-> **Requires implementation (Phase 2+).** Not runnable during documentation phase.
 
 ```bash
 # Prerequisites: Docker Desktop, 8 GB+ RAM for Docker
@@ -180,7 +178,7 @@ Flink:     localhost:8081
 
 ## 9. Local test checklist
 
-- [ ] `docker compose --profile dev up -d` — all containers healthy
+- [x] `docker compose --profile dev up -d` — all containers healthy
 - [ ] Kafka UI shows `metrics.raw` messages
 - [ ] Flink job status = RUNNING
 - [ ] `cqlsh` returns rows in `rdg.metrics_current`

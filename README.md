@@ -2,7 +2,7 @@
 
 Real-time stream processing pipeline inspired by Netflix RDG (Real-Time Distributed Graph).
 
-> **Status: Documentation phase** — design docs are complete; implementation (Docker, code) starts at [Phase 2](./docs/tasks/phase-2-infrastructure.md).  
+> **Status:** Phases 0–2 complete — Docker stack runs locally. Next: PyFlink job (Phase 4) and mock producer (Phase 6).  
 > **Documentation index:** [docs/README.md](./docs/README.md)
 
 **100% free & open source** · runs locally in **Docker** · no paid cloud services.
@@ -84,14 +84,12 @@ Ingests metric events from plant equipment, buffers them in Kafka, processes the
 
 ---
 
-## Quick start (after implementation)
-
-> **Not available yet.** The commands below apply once Phase 2–6 are implemented. See [docs/tasks/phase-2-infrastructure.md](./docs/tasks/phase-2-infrastructure.md).
+## Quick start
 
 ```bash
-git clone <repo-url> && cd rdg-stream
+git clone git@github.com:anhthqb97/RDG-stream.git && cd rdg-stream
 
-# Start full dev stack (requires docker-compose.yml)
+# Start full dev stack
 docker compose --profile dev up -d
 
 # Wait ~60s, then check health
@@ -102,7 +100,11 @@ open http://localhost:8090   # Kafka UI
 open http://localhost:8081   # Flink Dashboard
 open http://localhost:9001   # MinIO Console (minioadmin / minioadmin)
 
-# Verify data (after Flink job is running)
+# Verify init (topics + schema)
+docker compose exec kafka /opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --list
+docker compose exec cassandra cqlsh -e "DESCRIBE KEYSPACE rdg;"
+
+# Verify data (after Flink job is running — Phase 4)
 docker compose logs mock-producer --tail 10
 docker compose exec cassandra cqlsh -e "SELECT * FROM rdg.metrics_current LIMIT 5;"
 
@@ -157,13 +159,17 @@ All docs are written in **English only**. Start at **[docs/README.md](./docs/REA
 
 ## Project structure
 
-**Current (documentation phase):**
-
 ```
 rdg-stream/
 ├── README.md
+├── docker-compose.yml            ✅ Phase 2
+├── init/                         ✅ Phase 2 (topics + schema init)
+├── kafka/init-topics.sh
+├── cassandra/schema.cql
+├── flink/jobs/                   ← Phase 4 (PyFlink)
+├── producers/mock/               ✅ stub (Phase 6)
 └── docs/
-    ├── README.md                 ← documentation index
+    ├── README.md
     ├── pipeline.md
     ├── architecture.md
     ├── workflow.md
@@ -175,19 +181,6 @@ rdg-stream/
         ├── README.md
         ├── requirements.md
         └── phase-0-setup.md … phase-10-production.md
-```
-
-**Planned (implementation phase — not created yet):**
-
-```
-rdg-stream/
-├── docker-compose.yml            ← Phase 2
-├── kafka/init-topics.sh          ← Phase 3
-├── cassandra/schema.cql          ← Phase 5
-├── flink/jobs/                   ← Phase 4 (PyFlink / Python)
-│   ├── rdg_job.py
-│   └── requirements.txt
-└── producers/mock/               ← Phase 6 (Python)
 ```
 
 **Language:** **Python** for Flink job (PyFlink), mock producer, webhook, and API ([open-questions.md](./docs/open-questions.md))
