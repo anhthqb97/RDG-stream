@@ -73,9 +73,11 @@ TC-001 → TC-007 → TC-008 → TC-016 → TC-013
 |---|---|
 | **Requirement** | NFR-05 |
 | **Priority** | P1 |
-| **Status** | [ ] |
+| **Status** | [x] |
 
 **TC-018:** `docker compose restart flink-taskmanager` → job recovers, data keeps flowing.
+
+**Result (2026-07-18):** Pass — after enabling checkpointing (60s) and fixed-delay restart strategy, job `dc6214b3887605d12f526cedd5d1a035` returned to RUNNING within 60s; Cassandra `updated_at` continued updating after TaskManager restart.
 
 ---
 
