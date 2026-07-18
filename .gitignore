@@ -1,0 +1,14 @@
+.DS_Store
+*.swp
+*.swo
+.env
+.env.*
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.idea/
+.vscode/
+*.jar
+target/
+node_modules/
