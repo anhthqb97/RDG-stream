@@ -78,7 +78,7 @@ CREATE TABLE rdg.metrics_current (
 |---|---|
 | **Requirement** | REQ-07 |
 | **Priority** | P0 |
-| **Status** | [ ] |
+| **Status** | [x] |
 
 ```cql
 CREATE TABLE rdg.metrics_ts (
