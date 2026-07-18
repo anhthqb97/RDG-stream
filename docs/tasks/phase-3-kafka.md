@@ -4,6 +4,7 @@
 |---|---|
 | **Tasks** | TASK-021 – TASK-026 |
 | **Priority** | P0 |
+| **Status** | [ ] |
 | **Previous** | [Phase 2 — Infrastructure](./phase-2-infrastructure.md) |
 | **Next** | [Phase 4 — Flink](./phase-4-flink.md) |
 
@@ -23,9 +24,11 @@ Create Kafka topics and verify produce/consume on `metrics.raw`.
 |---|---|
 | **Requirement** | REQ-02, REQ-03 |
 | **Priority** | P0 |
-| **Status** | [ ] |
+| **Status** | [x] |
 
 Create `kafka/init-topics.sh` to create all topics on first boot.
+
+**Deliverable:** [kafka/init-topics.sh](../../kafka/init-topics.sh)
 
 ---
 
@@ -40,6 +43,8 @@ Create `kafka/init-topics.sh` to create all topics on first boot.
 - Topic: `metrics.raw`
 - Partitions: 3 (local)
 
+**Verified (2026-07-18):** PartitionCount: 3
+
 ---
 
 ### TASK-023 — Create metrics.dlq topic
@@ -52,6 +57,8 @@ Create `kafka/init-topics.sh` to create all topics on first boot.
 
 - Topic: `metrics.dlq`
 - Partitions: 1 (local)
+
+**Verified (2026-07-18):** PartitionCount: 1
 
 ---
 
@@ -66,6 +73,8 @@ Create `kafka/init-topics.sh` to create all topics on first boot.
 - Topic: `events.lifecycle`
 - Partitions: 1 (local)
 
+**Verified (2026-07-18):** PartitionCount: 1
+
 ---
 
 ### TASK-025 — Wire init container
@@ -77,6 +86,8 @@ Create `kafka/init-topics.sh` to create all topics on first boot.
 | **Status** | [ ] |
 
 One-shot init service in compose runs `init-topics.sh` after Kafka is healthy.
+
+**Deliverable:** [init/init.sh](../../init/init.sh) + `docker-compose.yml` `init` service
 
 ---
 
@@ -96,6 +107,8 @@ docker compose exec -T kafka /opt/kafka/bin/kafka-console-producer.sh \
 EOF
 ```
 
+**Verified (2026-07-18):** TC-004 produce OK · TC-005 consume OK
+
 ---
 
 ## Verify
@@ -111,6 +124,6 @@ docker compose exec kafka /opt/kafka/bin/kafka-topics.sh \
 
 ## Phase complete when
 
-- [ ] Topics `metrics.raw`, `metrics.dlq`, `events.lifecycle` exist
-- [ ] Manual produce appears in Kafka UI (http://localhost:8090)
-- [ ] Console consumer reads message back
+- [x] Topics `metrics.raw`, `metrics.dlq`, `events.lifecycle` exist
+- [x] Manual produce appears in Kafka UI (http://localhost:8090)
+- [x] Console consumer reads message back
