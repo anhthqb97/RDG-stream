@@ -33,7 +33,7 @@ Generate test data locally via mock producer (substitute for SCADA/webhook).
 |---|---|
 | **Requirement** | REQ-01, NFR-02 |
 | **Priority** | P0 |
-| **Status** | [ ] |
+| **Status** | [x] |
 
 - **Python** script in `producers/mock/` (see [open-questions.md](../open-questions.md))
 - Publishes valid JSON to `metrics.raw` every **2 seconds**
