@@ -132,7 +132,9 @@ class MetricAggregateFunction(AggregateFunction):
         acc["unit"] = value["unit"]
         return acc
 
-    def get_result(self, acc: dict[str, float | int | str | None]) -> dict[str, float | int | str | None]:
+    def get_result(
+        self, acc: dict[str, float | int | str | None]
+    ) -> dict[str, float | int | str | None]:
         return acc
 
     def merge(
@@ -144,15 +146,11 @@ class MetricAggregateFunction(AggregateFunction):
         acc1["count"] = int(acc1["count"]) + int(acc2["count"])
         if acc2["min"] is not None:
             acc1["min"] = (
-                acc2["min"]
-                if acc1["min"] is None
-                else min(float(acc1["min"]), float(acc2["min"]))
+                acc2["min"] if acc1["min"] is None else min(float(acc1["min"]), float(acc2["min"]))
             )
         if acc2["max"] is not None:
             acc1["max"] = (
-                acc2["max"]
-                if acc1["max"] is None
-                else max(float(acc1["max"]), float(acc2["max"]))
+                acc2["max"] if acc1["max"] is None else max(float(acc1["max"]), float(acc2["max"]))
             )
         if acc1["unit"] is None:
             acc1["unit"] = acc2["unit"]
