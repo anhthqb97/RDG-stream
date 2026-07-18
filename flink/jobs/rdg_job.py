@@ -9,7 +9,7 @@ from pyflink.common import Types
 from pyflink.common.serialization import SimpleStringSchema
 from pyflink.common.time import Time
 from pyflink.common.watermark_strategy import WatermarkStrategy
-from pyflink.datastream import DataStream, OutputTag, StreamExecutionEnvironment
+from pyflink.datastream import DataStream, StreamExecutionEnvironment
 from pyflink.datastream.connectors.kafka import (
     KafkaOffsetsInitializer,
     KafkaRecordSerializationSchema,
@@ -19,7 +19,6 @@ from pyflink.datastream.connectors.kafka import (
 from pyflink.datastream.functions import (
     AggregateFunction,
     MapFunction,
-    ProcessFunction,
     ProcessWindowFunction,
 )
 from pyflink.datastream.window import TumblingProcessingTimeWindows
@@ -34,7 +33,8 @@ CONSUMER_GROUP = "rdg-flink"
 CASSANDRA_HOST = os.getenv("CASSANDRA_HOST", "cassandra")
 CASSANDRA_KEYSPACE = "rdg"
 REQUIRED_FIELDS = ("plant_id", "equipment_id", "metric", "value", "unit", "ts")
-INVALID_TAG = OutputTag("invalid-records", Types.STRING())
+VALID_TAG = "valid"
+INVALID_TAG = "invalid"
 
 
 def validate_record(raw: str) -> tuple[dict[str, Any] | None, str | None]:
@@ -71,11 +71,11 @@ def validate_record(raw: str) -> tuple[dict[str, Any] | None, str | None]:
     return record, None
 
 
-class ValidateFunction(ProcessFunction):
-    def process_element(self, value: str, ctx: ProcessFunction.Context):
+class SplitValidationFunction(MapFunction):
+    def map(self, value: str) -> tuple[str, str]:
         record, reason = validate_record(value)
         if reason:
-            ctx.output(
+            return (
                 INVALID_TAG,
                 json.dumps(
                     {
@@ -85,14 +85,23 @@ class ValidateFunction(ProcessFunction):
                     }
                 ),
             )
-            return
-        yield record
+        return (VALID_TAG, json.dumps(record))
 
 
 def apply_validation(raw_stream: DataStream) -> tuple[DataStream, DataStream]:
-    validated = raw_stream.process(ValidateFunction(), output_type=Types.PICKLED_BYTE_ARRAY())
-    invalid = validated.get_side_output(INVALID_TAG)
-    return validated, invalid
+    tagged = raw_stream.map(
+        SplitValidationFunction(),
+        output_type=Types.TUPLE([Types.STRING(), Types.STRING()]),
+    )
+    valid = tagged.filter(lambda item: item[0] == VALID_TAG).map(
+        lambda item: json.loads(item[1]),
+        output_type=Types.PICKLED_BYTE_ARRAY(),
+    )
+    invalid = tagged.filter(lambda item: item[0] == INVALID_TAG).map(
+        lambda item: item[1],
+        output_type=Types.STRING(),
+    )
+    return valid, invalid
 
 
 def build_dlq_kafka_sink() -> KafkaSink:
