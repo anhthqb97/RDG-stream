@@ -4,6 +4,7 @@
 |---|---|
 | **Tasks** | TASK-011 – TASK-020 |
 | **Priority** | P0 |
+| **Status** | [ ] |
 | **Previous** | [Phase 1 — Design](./phase-1-design.md) |
 | **Next** | [Phase 3 — Kafka](./phase-3-kafka.md) · [Phase 5 — Cassandra](./phase-5-cassandra.md) |
 
@@ -23,9 +24,11 @@ Create `docker-compose.yml` with all core services running locally.
 |---|---|
 | **Requirement** | NFR-02, CON-06 |
 | **Priority** | P0 |
-| **Status** | [ ] |
+| **Status** | [x] |
 
 Define all services in root `docker-compose.yml`.
+
+**Verified (2026-07-18):** `docker-compose.yml` at repo root
 
 ---
 
@@ -55,6 +58,8 @@ Flink connects to both networks.
 | **Status** | [ ] |
 
 Persist data for Kafka and Cassandra between restarts. Use `docker compose down -v` to wipe.
+
+**Volumes:** `kafka-data`, `cassandra-data`, `minio-data`
 
 ---
 
@@ -96,6 +101,7 @@ Use `depends_on: condition: service_healthy` so init runs after Kafka/Cassandra 
 rdg-stream/
 ├── .cursor/rules/
 ├── docker-compose.yml
+├── init/
 ├── kafka/init-topics.sh
 ├── cassandra/schema.cql
 ├── flink/jobs/
@@ -130,7 +136,7 @@ rdg-stream/
 
 - Image: `flink:1.19-scala_2.12-java11`
 - Services: `flink-jobmanager` (port 8081), `flink-taskmanager`
-- Network: `stream`
+- Network: `stream` + `storage`
 
 ---
 
@@ -145,7 +151,7 @@ rdg-stream/
 - Image: `cassandra:4.1`
 - Port: `9042`
 - Network: `storage`
-- Env: `MAX_HEAP_SIZE=512M`, `HEAP_NEWSIZE=128M` (if OOM)
+- Env: `MAX_HEAP_SIZE=512M`, `HEAP_NEWSIZE=128M`
 
 ---
 
@@ -173,10 +179,12 @@ docker compose ps
 
 **Test case:** TC-001 — all containers healthy
 
+**Verified (2026-07-18):** All core containers healthy; init created topics and applied schema
+
 ---
 
 ## Phase complete when
 
-- [ ] `docker compose --profile dev up -d` succeeds
-- [ ] All core containers running (kafka, flink, cassandra, minio)
-- [ ] No restart loops in `docker compose ps`
+- [x] `docker compose --profile dev up -d` succeeds
+- [x] All core containers running (kafka, flink, cassandra, minio)
+- [x] No restart loops in `docker compose ps`
