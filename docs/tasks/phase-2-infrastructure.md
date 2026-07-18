@@ -69,7 +69,7 @@ Persist data for Kafka and Cassandra between restarts. Use `docker compose down 
 |---|---|
 | **Requirement** | NFR-02 |
 | **Priority** | P0 |
-| **Status** | [ ] |
+| **Status** | [x] |
 
 Use `depends_on: condition: service_healthy` so init runs after Kafka/Cassandra are ready.
 
