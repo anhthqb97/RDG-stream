@@ -55,7 +55,7 @@ Flink connects to both networks.
 |---|---|
 | **Requirement** | NFR-07 |
 | **Priority** | P0 |
-| **Status** | [ ] |
+| **Status** | [x] |
 
 Persist data for Kafka and Cassandra between restarts. Use `docker compose down -v` to wipe.
 
