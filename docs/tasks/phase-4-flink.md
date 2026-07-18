@@ -112,7 +112,7 @@ Window size: 60 seconds, tumbling (no overlap).
 |---|---|
 | **Requirement** | REQ-05 |
 | **Priority** | P0 |
-| **Status** | [ ] |
+| **Status** | [x] |
 
 Per window: **avg**, **min**, **max** of `value`.
 

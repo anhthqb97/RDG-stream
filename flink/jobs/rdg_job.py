@@ -15,7 +15,7 @@ from pyflink.datastream.connectors.kafka import (
     KafkaSource,
 )
 from pyflink.common.time import Time
-from pyflink.datastream.functions import ProcessFunction
+from pyflink.datastream.functions import AggregateFunction, ProcessFunction, ProcessWindowFunction
 from pyflink.datastream.window import TumblingProcessingTimeWindows
 
 JOB_NAME = "rdg-stream-job"
@@ -111,6 +111,71 @@ def apply_tumbling_window(keyed_stream: DataStream) -> DataStream:
     return keyed_stream.window(TumblingProcessingTimeWindows.of(Time.minutes(1)))
 
 
+class MetricAggregateFunction(AggregateFunction):
+    def create_accumulator(self) -> dict[str, float | int | str | None]:
+        return {"sum": 0.0, "count": 0, "min": None, "max": None, "unit": None}
+
+    def add(self, value: dict[str, Any], acc: dict[str, float | int | str | None]):
+        metric_value = float(value["value"])
+        acc["sum"] = float(acc["sum"]) + metric_value
+        acc["count"] = int(acc["count"]) + 1
+        acc["min"] = metric_value if acc["min"] is None else min(float(acc["min"]), metric_value)
+        acc["max"] = metric_value if acc["max"] is None else max(float(acc["max"]), metric_value)
+        acc["unit"] = value["unit"]
+        return acc
+
+    def get_result(self, acc: dict[str, float | int | str | None]) -> dict[str, float | int | str | None]:
+        return acc
+
+    def merge(
+        self,
+        acc1: dict[str, float | int | str | None],
+        acc2: dict[str, float | int | str | None],
+    ) -> dict[str, float | int | str | None]:
+        acc1["sum"] = float(acc1["sum"]) + float(acc2["sum"])
+        acc1["count"] = int(acc1["count"]) + int(acc2["count"])
+        if acc2["min"] is not None:
+            acc1["min"] = (
+                acc2["min"]
+                if acc1["min"] is None
+                else min(float(acc1["min"]), float(acc2["min"]))
+            )
+        if acc2["max"] is not None:
+            acc1["max"] = (
+                acc2["max"]
+                if acc1["max"] is None
+                else max(float(acc1["max"]), float(acc2["max"]))
+            )
+        if acc1["unit"] is None:
+            acc1["unit"] = acc2["unit"]
+        return acc1
+
+
+class EnrichAggregateWindowFunction(ProcessWindowFunction):
+    def process(self, key, context, aggregates):
+        acc = aggregates[0]
+        plant_id, metric = key
+        count = int(acc["count"])
+        avg = float(acc["sum"]) / count if count else 0.0
+        yield {
+            "plant_id": plant_id,
+            "metric": metric,
+            "avg": avg,
+            "min": acc["min"],
+            "max": acc["max"],
+            "unit": acc["unit"],
+            "window_end_ms": context.window().end,
+        }
+
+
+def compute_aggregates(windowed_stream: DataStream) -> DataStream:
+    return windowed_stream.aggregate(
+        MetricAggregateFunction(),
+        EnrichAggregateWindowFunction(),
+        output_type=Types.PICKLED_BYTE_ARRAY(),
+    )
+
+
 def create_execution_environment() -> StreamExecutionEnvironment:
     env = StreamExecutionEnvironment.get_execution_environment()
     env.set_parallelism(1)
@@ -136,7 +201,8 @@ def main() -> None:
     validated, invalid = apply_validation(raw_stream)
     route_invalid_to_dlq(invalid)
     keyed = key_by_plant_and_metric(validated)
-    apply_tumbling_window(keyed)
+    windowed = apply_tumbling_window(keyed)
+    compute_aggregates(windowed)
     env.execute(JOB_NAME)
 
 
