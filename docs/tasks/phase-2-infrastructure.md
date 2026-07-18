@@ -94,6 +94,7 @@ Use `depends_on: condition: service_healthy` so init runs after Kafka/Cassandra 
 
 ```
 rdg-stream/
+├── .cursor/rules/
 ├── docker-compose.yml
 ├── kafka/init-topics.sh
 ├── cassandra/schema.cql

@@ -1,0 +1,94 @@
+---
+description: RDG Stream platform — stack, conventions, and implementation rules
+alwaysApply: true
+---
+
+# RDG Stream Platform
+
+Real-time pipeline: **Sources → Kafka → PyFlink → Cassandra** (+ MinIO checkpoints).
+
+## Status & docs
+
+- Phase 1 (design) is complete; implementation starts at **Phase 2** (`docker-compose.yml`).
+- Before coding, read: `docs/pipeline.md`, `docs/architecture.md`, `docs/open-questions.md`.
+- Task order: `docs/tasks/README.md` — MVP path: **0 → 2 → 3 + 5 → 4 → 6 → 9**.
+- All documentation in **English only**.
+
+## Stack (local, free OSS)
+
+| Layer | Tech |
+|-------|------|
+| Ingestion | Apache Kafka 3.7 KRaft — `apache/kafka:3.7.0` |
+| Processing | Apache Flink 1.19 + **PyFlink** — `flink:1.19-scala_2.12-java11` |
+| Storage | Apache Cassandra 4.1 — `cassandra:4.1` |
+| Checkpoints | MinIO — `minio/minio:latest` |
+
+No paid cloud (Confluent Cloud, AWS MSK, managed Flink).
+
+## Language
+
+- **Python** for all application code: mock producer, webhook, read API, DLQ CLI.
+- **PyFlink** for the streaming job (`flink/jobs/rdg_job.py`).
+- Dependencies: `pip` + `requirements.txt`; pin `apache-flink==1.19.*`.
+- Submit: `flink run -py /opt/flink/jobs/rdg_job.py`
+- Do **not** use Go/Java for new app code unless explicitly requested.
+
+## Data contracts
+
+**Topic `metrics.raw`** — required JSON fields:
+
+```json
+{"plant_id":"…","equipment_id":"…","metric":"…","value":0.0,"unit":"…","ts":"2026-07-18T10:00:00Z"}
+```
+
+- Invalid records → `metrics.dlq` as wrapped JSON: `{ "error", "reason", "original" }`.
+- Cassandra keyspace `rdg`: `metrics_current`, `metrics_ts`.
+- Flink: KeyBy `plant_id` + `metric`, 1-min tumbling window, avg/min/max.
+- Semantics: at-least-once + idempotent Cassandra upserts.
+
+## Repo layout
+
+```
+docker-compose.yml
+kafka/init-topics.sh
+cassandra/schema.cql
+flink/jobs/rdg_job.py
+producers/mock/
+docs/
+```
+
+## Docker conventions
+
+- Networks: `stream` (Kafka, Flink, MinIO) + `storage` (Cassandra).
+- Profiles: `default` (core), `dev` (+ kafka-ui, mock-producer).
+- Single init container for topics + schema.
+- Healthchecks + `depends_on: service_healthy`.
+
+## Code principles
+
+- Minimize scope — smallest correct diff; no unrelated changes.
+- Match existing patterns; reuse before adding abstractions.
+- No secrets in git (`.env`, keys).
+- Update `docs/` when architecture or contracts change.
+- Useful tests only — see `docs/test-plan.md` (TC-001 – TC-024).
+
+## Commits
+
+- Commit only when asked.
+- No `Co-authored-by: Cursor` in commit messages.
+- **Format:** `TASK-XXX: <action> <message>`
+- **Initial commit:** `initial commit` (first commit in repo only)
+- **Actions:** `add` · `update` · `fix` · `remove` · `refactor` · `docs` · `test` · `chore`
+- **Task ID must match the task you are doing** — check title in `docs/tasks/phase-N-*.md`.
+  - e.g. TASK-004 = Clone repo · TASK-011 = docker-compose.yml · TASK-016 = repo layout
+
+**Examples:**
+
+```
+TASK-004: add clone repo setup notes
+TASK-011: add docker-compose.yml
+TASK-016: add Cursor project rules
+TASK-027: add PyFlink job scaffold
+TASK-008: update metrics.raw schema in docs
+TASK-055: test DLQ routing (TC-010)
+```
