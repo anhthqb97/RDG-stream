@@ -14,7 +14,9 @@ from pyflink.datastream.connectors.kafka import (
     KafkaSink,
     KafkaSource,
 )
+from pyflink.common.time import Time
 from pyflink.datastream.functions import ProcessFunction
+from pyflink.datastream.window import TumblingProcessingTimeWindows
 
 JOB_NAME = "rdg-stream-job"
 KAFKA_BOOTSTRAP = os.getenv("KAFKA_BOOTSTRAP", "kafka:19092")
@@ -105,6 +107,10 @@ def key_by_plant_and_metric(stream: DataStream) -> DataStream:
     return stream.key_by(lambda record: (record["plant_id"], record["metric"]))
 
 
+def apply_tumbling_window(keyed_stream: DataStream) -> DataStream:
+    return keyed_stream.window(TumblingProcessingTimeWindows.of(Time.minutes(1)))
+
+
 def create_execution_environment() -> StreamExecutionEnvironment:
     env = StreamExecutionEnvironment.get_execution_environment()
     env.set_parallelism(1)
@@ -129,7 +135,8 @@ def main() -> None:
     raw_stream = build_kafka_source(env)
     validated, invalid = apply_validation(raw_stream)
     route_invalid_to_dlq(invalid)
-    key_by_plant_and_metric(validated)
+    keyed = key_by_plant_and_metric(validated)
+    apply_tumbling_window(keyed)
     env.execute(JOB_NAME)
 
 

@@ -100,7 +100,7 @@ Partition stream by composite key for correct windowing.
 |---|---|
 | **Requirement** | REQ-05, NFR-04 |
 | **Priority** | P0 |
-| **Status** | [ ] |
+| **Status** | [x] |
 
 Window size: 60 seconds, tumbling (no overlap).
 
