@@ -45,9 +45,11 @@ TC-001 → TC-007 → TC-008 → TC-016 → TC-013
 |---|---|
 | **Requirement** | REQ-01 – REQ-07 |
 | **Priority** | P0 |
-| **Status** | [ ] |
+| **Status** | [x] |
 
 **TC-016:** Mock producer → Kafka → Flink → Cassandra. Wait 90s, query both tables.
+
+**Result (2026-07-18):** Pass — `metrics_current` 13 rows, `metrics_ts` 37 rows; Flink job RUNNING.
 
 ---
 
@@ -57,9 +59,11 @@ TC-001 → TC-007 → TC-008 → TC-016 → TC-013
 |---|---|
 | **Requirement** | REQ-03 |
 | **Priority** | P0 |
-| **Status** | [ ] |
+| **Status** | [x] |
 
 **TC-010:** Send invalid JSON → appears in `metrics.dlq`, not in Cassandra.
+
+**Result (2026-07-18):** Pass — invalid `{"plant_id":"BAD","metric":"x"}` routed to DLQ with wrapped JSON.
 
 ---
 
@@ -81,9 +85,11 @@ TC-001 → TC-007 → TC-008 → TC-016 → TC-013
 |---|---|
 | **Requirement** | REQ-06 |
 | **Priority** | P0 |
-| **Status** | [ ] |
+| **Status** | [x] |
 
 **TC-013:** `SELECT * FROM rdg.metrics_current` returns rows with non-null values.
+
+**Result (2026-07-18):** Pass — plant-a metrics with non-null value and updated_at.
 
 ---
 
@@ -113,10 +119,10 @@ Run all test cases TC-001 – TC-024. Log results in test-plan run log.
 
 ## MVP definition of done
 
-- [ ] TASK-053, 054, 055, 057 pass
-- [ ] Mock producer → Kafka → Flink → Cassandra works
-- [ ] Invalid data goes to DLQ only
-- [ ] Smoke tests pass
+- [x] TASK-053, 054, 055, 057 pass
+- [x] Mock producer → Kafka → Flink → Cassandra works
+- [x] Invalid data goes to DLQ only
+- [x] Smoke tests pass
 
 ---
 
