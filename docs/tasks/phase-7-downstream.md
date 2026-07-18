@@ -46,13 +46,23 @@ docker compose exec cassandra cqlsh -e \
 |---|---|
 | **Requirement** | REQ-10 |
 | **Priority** | P2 |
-| **Status** | [ ] |
+| **Status** | [x] |
 
-Lightweight **FastAPI** service in Docker:
-- `GET /metrics/current?plant_id=NM01`
-- `GET /metrics/history?plant_id=NM01&metric=power_output_mw`
+Lightweight **FastAPI** service in Docker (`api/`, profile `dev`):
+- `GET /metrics/current?plant_id=plant-a`
+- `GET /metrics/history?plant_id=plant-a&metric=temperature`
+- `GET /health`
 
-Connects to Cassandra at `cassandra:9042`.
+Connects to Cassandra at `cassandra:9042`. Host port **8000**.
+
+**Start:**
+
+```bash
+docker compose --profile dev up -d read-api
+curl "http://localhost:8000/metrics/current?plant_id=plant-a"
+```
+
+**Result (2026-07-18):** Pass — JSON responses verified for current and history endpoints.
 
 ---
 

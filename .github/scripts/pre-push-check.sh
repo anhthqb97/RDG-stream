@@ -43,6 +43,7 @@ run_yamllint() {
 PYTHON_TARGETS=()
 [[ -d flink ]] && PYTHON_TARGETS+=(flink)
 [[ -d producers ]] && PYTHON_TARGETS+=(producers)
+[[ -d api ]] && PYTHON_TARGETS+=(api)
 
 if [[ ${#PYTHON_TARGETS[@]} -gt 0 ]]; then
   require_cmd python3
